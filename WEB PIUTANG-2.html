@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Piutang Korporat KC Ende 86300</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; background-color: #f8f9fa; }
+        
+        /* OPTIMALISASI KONTROL PANEL (SATU BARIS RESPONSIVE) */
+        .control-panel { 
+            max-width: 760px; 
+            margin: 16px auto 0 auto; 
+            padding: 12px 14px; 
+            background-color: #f3f4f6; 
+            border: 1px solid #dfe3e8; 
+            border-radius: 10px; 
+        }
+        
+        /* OPTIMALISASI TOMBOL KONTROL PANEL (HANYA IKON) */
+        .btn-custom-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn-custom-icon.dropdown-toggle {
+            width: auto;
+            padding: 0 12px;
+            min-width: 42px;
+        }
+        .btn-custom-icon.dropdown-toggle::after {
+            margin-left: 0.35rem;
+        }
+        .btn-custom-icon:active {
+            transform: scale(0.95);
+        }
+        .btn-sheets-icon {
+            background-color: #fff;
+            color: #198754;
+            border: 1px solid #198754;
+        }
+        .btn-sheets-icon:hover {
+            background-color: #198754;
+            color: #fff;
+        }
+        .btn-print-icon {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .btn-print-icon:hover {
+            background-color: #bb2d3b;
+        }
+        .btn-wa-icon {
+            background-color: #25D366;
+            color: #fff;
+        }
+        .btn-wa-icon:hover {
+            background-color: #20ba5a;
+        }
+        .btn-upload-icon {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+        .btn-upload-icon:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* WADAH UTAMA LAPORAN - REVISI DIPERSEMPIT SEUSAI LEBAR ISI */
+        .report-container { 
+            background-color: #ffffff; 
+            width: min(100%, 720px); 
+            margin: 12px auto 24px auto; 
+            padding: 18px 22px; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+        }
+        
+        /* HEADER JUDUL UTAMA LAPORAN (KOTAK ORANGE/KUNING TUA) */
+        .header-title {
+            background: linear-gradient(180deg, #ffe66d 0%, #f8d94d 100%);
+            color: #000000 !important;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px 16px;
+            border: 1px solid #d7af1c;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .header-meta-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            row-gap: 4px;
+            column-gap: 10px;
+            text-align: left;
+            max-width: 440px;
+            margin: 8px auto 0 auto;
+            font-size: 11px;
+            text-transform: uppercase;
+            line-height: 1.4;
+        }
+        
+        /* KOREKSI TABEL: DIPERSEMPIT SESUAI ISI KOLOM */
+        .table-report {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0 auto 12px auto;
+            background: #fff;
+            border: 1px solid #dfe3e8;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table-report th, .table-report td {
+            border: 1px solid #dfe3e8;
+            padding: 5px 6px;
+            vertical-align: middle;
+            font-size: 11px;
+        }
+        
+        .table-report th {
+            background-color: #fff3b0 !important;
+            color: #000000 !important;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .table-report tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .table-report tbody tr:hover {
+            background-color: #f7f9fc;
+        }
+        
+        .table-report th:nth-child(1), .table-report td:nth-child(1) { width: 45px; text-align: center; }
+        .table-report th:nth-child(2), .table-report td:nth-child(2) { width: 160px; text-align: center; }
+        .table-report th:nth-child(3), .table-report td:nth-child(3) { width: 110px; text-align: center; }
+        .table-report th:nth-child(4), .table-report td:nth-child(4) { width: 200px; }
+        
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .float-end { float: right; }
+        
+        /* FORMAT INFORMASI REKONSILIASI SALDO */
+        .info-saldo-section {
+            display: none;
+            width: 100%;
+            margin-top: 16px;
+            padding-top: 2px;
+        }
+        .info-saldo-section .title-saldo {
+            width: 90%;
+            margin: 0 auto 0 auto;
+            padding: 6px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            background: linear-gradient(180deg, #ffe66d 0%, #f7d653 100%);
+            color: #000;
+            border: 1px solid #d3a719;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            text-transform: uppercase;
+        }
+        .info-saldo-section table {
+            width: 90%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            border: 1px solid #c7b77f;
+            table-layout: fixed;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .info-saldo-section td {
+            padding: 5px 8px;
+            border: 1px solid #d9d9d9 !important;
+            font-size: 11.5px;
+            font-weight: bold;
+            background-color: #fff;
+        }
+        .info-saldo-section .label-saldo { text-align: left; width: 62%; }
+        .info-saldo-section .rp-saldo { text-align: left; width: 12%; }
+        .info-saldo-section .nilai-saldo { text-align: right; width: 26%; }
+        .info-saldo-section .saldo-lalu-row {
+            display: none;
+        }
+        
+        .highlight-box td {
+            background: linear-gradient(180deg, #f9e37f 0%, #f5d24c 100%) !important;
+            color: #000000 !important;
+            font-weight: bold;
+        }
+        
+        .note-container { width: 90%; margin: 4px auto 15px auto; }
+        .note-text { font-size: 10.5px; color: #333; font-style: italic; }
+        
+        /* TANDA TANGAN STRUKTUR SEJAJAR */
+        .ttd-section {
+            margin-top: 18px;
+            width: 100%;
+            border-top: 1px solid #ececec;
+            padding-top: 12px;
+        }
+        .ttd-table { width: 100%; border-collapse: collapse; }
+        .ttd-table td { width: 50%; text-align: center; vertical-align: top; border: none !important; padding: 0 10px; font-size: 11px; }
+        .ttd-space { height: 72px; }
+        .ttd-nama { font-weight: bold; text-decoration: underline; margin-bottom: 2px; text-transform: uppercase; }
+        .nippos-text { margin: 0; font-size: 11px; color: #555; }
+
+        /* PAGE NAV (Preview on screen) */
+        .page-nav-wrapper{
+            max-width: 760px;
+            margin: 8px auto 0 auto;
+            padding: 0 10px;
+        }
+        .page-nav{
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            background: #f5f6f7;
+            border: 1px solid #dfe3e8;
+            border-radius: 9px;
+            padding: 6px 8px;
+        }
+        .page-toggle{
+            border: 1px solid #0d6efd;
+            background: #fff;
+            color: #0d6efd;
+            border-radius: 7px;
+            padding: 5px 12px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, transform 0.05s;
+        }
+        .page-toggle:active{ transform: scale(0.98); }
+        .page-toggle.active{
+            background: #0d6efd;
+            color: #fff;
+        }
+        .page-section{
+            display: none;
+        }
+        .page-section.active{
+            display: block;
+        }
+
+        .invoice-page {
+            max-width: 980px;
+            margin: 18px auto 20px auto;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 18px 20px 16px 20px;
+            color: #111;
+            font-family: Arial, sans-serif;
+        }
+        .invoice-page * {
+            box-sizing: border-box;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #0d2b4f;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+        .invoice-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .invoice-brand img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            filter: drop-shadow(0 1px 0 rgba(0,0,0,0.1));
+        }
+        .invoice-company {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            color: #0d2b4f;
+        }
+        .invoice-company small {
+            display: block;
+            font-size: 10px;
+            font-weight: 400;
+            text-transform: none;
+            margin-top: 2px;
+            color: #2a2a2a;
+        }
+        .invoice-title {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #0d2b4f;
+            line-height: 1;
+        }
+        .invoice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .invoice-box {
+            border: 1.2px solid #000;
+            padding: 10px 12px;
+            background: #f9f9f9;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .invoice-box-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #0d2b4f;
+            letter-spacing: 0.3px;
+        }
+        .invoice-row {
+            display: grid;
+            grid-template-columns: 180px 10px 1fr;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 12px;
+            line-height: 1.55;
+            align-items: center;
+        }
+        .invoice-row > div:nth-child(1) {
+            font-weight: 600;
+        }
+        .invoice-row > div:nth-child(3) {
+            font-weight: 600;
+            color: #111;
+        }
+        .invoice-bottom-row {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 18px;
+            margin-top: 10px;
+        }
+        .invoice-bank-box {
+            width: 100%;
+            min-height: 176px;
+            border: none;
+            background: #fff;
+            padding: 12px 14px;
+            margin-right: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .invoice-bank-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 10px;
+        }
+        .invoice-bank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            line-height: 1.45;
+            font-weight: 600;
+            color: #111;
+            white-space: normal;
+        }
+        .invoice-editable-input {
+            width: 100%;
+            min-width: 170px;
+            border: none;
+            outline: none;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 0;
+            background: transparent;
+            box-sizing: border-box;
+            font-weight: 600;
+            color: #111;
+        }
+        #invoiceJatuhTempo {
+            width: 100%;
+            max-width: 192px;
+            min-width: 170px;
+        }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-top: 10px;
+            margin-bottom: 12px;
+            border: 2px solid #000;
+        }
+        .invoice-table th,
+        .invoice-table td {
+            border: 1px solid #000;
+            padding: 6px 7px;
+            vertical-align: middle;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+        .invoice-table th {
+            background: #e5c75a;
+            font-weight: 700;
+            text-align: center;
+            color: #000;
+        }
+        .invoice-table td {
+            background: #fff;
+        }
+        .invoice-table td.num {
+            text-align: right;
+        }
+        .invoice-table th:nth-child(1),
+        .invoice-table td:nth-child(1) {
+            width: 50px;
+            text-align: center;
+        }
+        .invoice-table th:nth-child(2),
+        .invoice-table td:nth-child(2) {
+            width: 110px;
+            text-align: center;
+        }
+        .invoice-table th:nth-child(4),
+        .invoice-table td:nth-child(4) {
+            width: 150px;
+            text-align: center;
+        }
+        .invoice-table th:nth-child(5),
+        .invoice-table td:nth-child(5) {
+            width: 180px;
+            text-align: right;
+        }
+        .invoice-summary {
+            width: 420px;
+            margin-left: auto;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .invoice-summary td {
+            border: none;
+            padding: 6px 8px;
+            font-size: 12px;
+            background: #fff;
+            vertical-align: middle;
+        }
+        .invoice-summary td:first-child {
+            font-weight: 700;
+            width: 38%;
+        }
+        .invoice-summary td:nth-child(2) {
+            width: 22%;
+            text-align: right;
+        }
+        .invoice-summary td:nth-child(3) {
+            width: 10%;
+            text-align: center;
+        }
+        .invoice-summary td:last-child {
+            width: 30%;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .invoice-summary .tax-input {
+            width: 100%;
+            max-width: 54px;
+            text-align: right;
+            padding: 2px 3px;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            font-size: 12px;
+            background: transparent;
+            color: #111;
+        }
+        .invoice-summary .tax-input-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 3px;
+            width: 100%;
+        }
+        .invoice-summary .discount-input {
+            width: 100%;
+            text-align: right;
+            padding: 2px 0;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            font-size: 12px;
+            background: transparent;
+            color: #111;
+        }
+        .invoice-summary .manual-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .invoice-total td {
+            background: #f3d14d !important;
+            font-weight: 700;
+        }
+        .invoice-note {
+            margin-top: 18px;
+            border-top: 2px solid #111;
+            padding-top: 10px;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: justify;
+            color: #222;
+        }
+
+        .invoice-reference-page {
+            width: 794px;
+            min-height: 1123px;
+            margin: 18px auto 30px;
+            padding: 10px 28px 0;
+            background: #fff;
+            border: 1px solid #111;
+            color: #000;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.25;
+        }
+        .invoice-reference-page * { box-sizing: border-box; }
+        .invoice-reference-header { position: relative; min-height: 112px; text-align: center; }
+        .invoice-reference-logo { position: absolute; top: 0; left: -8px; width: 96px; height: 82px; object-fit: contain; }
+        .invoice-reference-form { position: absolute; top: -5px; right: 0; font-size: 11px; font-style: italic; }
+        .invoice-reference-form select { width: 34px; padding: 1px 2px; border: 1px solid #999; border-radius: 3px; background: #fff; font: inherit; }
+        .invoice-reference-company { padding-top: 12px; font-weight: 700; line-height: 1.55; }
+        .invoice-reference-company div:first-child { font-size: 13px; }
+        .invoice-reference-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 12px 0 52px; }
+        .invoice-reference-recipient { line-height: 1.55; }
+        .invoice-reference-recipient div:first-child { margin-bottom: 6px; }
+        .invoice-reference-details { display: grid; grid-template-columns: 104px 14px 1fr; line-height: 1.55; }
+        .invoice-reference-details strong { font-size: 14px; }
+        .invoice-reference-intro { margin-bottom: 12px; }
+        .invoice-reference-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #111; margin: 0 0 22px; }
+        .invoice-reference-table th, .invoice-reference-table td { border: 1px solid #111; padding: 4px 6px; height: 19px; vertical-align: middle; }
+        .invoice-reference-table th { background: #fffdbd; text-align: center; font-weight: 400; }
+        .invoice-reference-table th:nth-child(1) { width: 58px; }
+        .invoice-reference-table th:nth-child(2) { width: 250px; }
+        .invoice-reference-table th:nth-child(3) { width: 76px; }
+        .invoice-reference-table th:nth-child(4) { width: 112px; }
+        .invoice-reference-table th:nth-child(5) { width: 136px; }
+        .invoice-reference-table td:nth-child(1), .invoice-reference-table td:nth-child(3), .invoice-reference-table td:nth-child(4) { text-align: center; }
+        .invoice-reference-table td:last-child { text-align: right; }
+        .invoice-reference-table .invoice-highlight td { font-weight: 700; }
+        .invoice-reference-footer-note { margin: 0 2px 22px; }
+        .invoice-reference-signature { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin-top: 8px; }
+        .invoice-reference-sign-space { height: 58px; }
+        .invoice-reference-signature strong { text-decoration: underline; }
+        .invoice-reference-bottom-notes { margin: 36px -28px 0; border-top: 1px solid #111; text-align: center; line-height: 1.35; }
+        .invoice-reference-bottom-notes div { padding: 10px 24px; }
+        .invoice-reference-bottom-notes div + div { border-top: 1px solid #111; }
+
+        @media print {
+            .invoice-page {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 10mm 12mm !important;
+                min-height: 270mm;
+            }
+            .invoice-header {
+                margin-bottom: 12px;
+                border-bottom: 2px solid #111;
+            }
+            .invoice-box {
+                background: #fff !important;
+            }
+            .invoice-table,
+            .invoice-summary,
+            .invoice-note {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .invoice-table th,
+            .invoice-table td,
+            .invoice-summary td {
+                font-size: 8pt !important;
+            }
+            .invoice-title {
+                font-size: 20pt !important;
+            }
+            .invoice-company {
+                font-size: 11pt !important;
+            }
+            .invoice-reference-page { width: 100% !important; min-height: 277mm; margin: 0 !important; padding: 3mm 7mm 0 !important; border: 1px solid #111 !important; box-shadow: none !important; font-size: 9pt; }
+            .invoice-reference-form select { appearance: none; -webkit-appearance: none; border: 0; padding: 0; background: transparent; color: inherit; }
+            .invoice-reference-page .invoice-reference-meta { margin-bottom: 38px; }
+            .invoice-reference-page .invoice-reference-table { margin-bottom: 18px; }
+            .invoice-reference-page .invoice-reference-bottom-notes { margin-left: -7mm; margin-right: -7mm; }
+            body.print-page-2 .page-section.page-1 { display: none !important; }
+            body.print-page-2 .page-section.page-2 { display: block !important; page-break-before: auto; }
+        }
+        /* debug-panel removed */
+
+
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 15px;
+            backdrop-filter: blur(4px);
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 32px 28px;
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.18);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .login-card img.login-brand {
+            width: 120px;
+            display: block;
+            margin: 0 auto 16px auto;
+        }
+        .login-card .login-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            color: #0b3d91;
+        }
+        .login-card .login-subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #5c6574;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .login-card .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #3d4b64;
+        }
+        .login-card .form-control {
+            border-radius: 0.75rem;
+            padding: 12px 14px;
+            font-size: 14px;
+            background-color: #f8f9fb;
+            border: 1px solid #dde1e6;
+        }
+        .login-card .btn-login {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .login-card .login-footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #7a8290;
+        }
+
+        .landing-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(11,61,145,0.92), rgba(2,93,210,0.88));
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            padding: 15px;
+            backdrop-filter: blur(6px);
+        }
+
+        .landing-card {
+            width: 100%;
+            max-width: 520px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 34px 30px;
+            box-shadow: 0 30px 70px rgba(6, 24, 57, 0.24);
+            text-align: center;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        .landing-logo {
+            width: 120px;
+            max-width: 100%;
+            margin: 0 auto 20px auto;
+            display: block;
+        }
+
+        .landing-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #0b3d91;
+            letter-spacing: 0.5px;
+        }
+
+        .landing-subtitle {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #1d2a50;
+        }
+
+        .landing-user {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0b3d91;
+            margin-bottom: 12px;
+        }
+
+        .landing-text {
+            font-size: 13px;
+            margin-bottom: 22px;
+            color: #4a5668;
+            line-height: 1.7;
+        }
+
+        .landing-card .btn {
+            width: 100%;
+            padding: 12px 0;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .landing-card .landing-notice {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .hidden-by-role { display: none !important; }
+
+        .role-info {
+            font-size: 11px;
+            margin-top: 10px;
+            color: #444;
+        }
+
+        .surat-container {
+            background: #fff;
+            width: 794px;
+            min-height: 1123px;
+            margin: 18px auto 30px auto;
+            padding: 46px 56px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            font-size: 14px;
+            line-height: 1.45;
+            color: #000;
+            page-break-before: always;
+        }
+        .surat-header {
+            display: grid;
+            grid-template-columns: 1fr 76px;
+            align-items: start;
+            margin-bottom: 34px;
+        }
+        .pos-logo-img {
+            width: 126px;
+            height: auto;
+            display: block;
+        }
+        .surat-corner {
+            width: 76px;
+            height: 76px;
+            background: #f23a21;
+            border-bottom-left-radius: 76px;
+            justify-self: end;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .surat-top-grid {
+            display: grid;
+            grid-template-columns: 1fr 205px;
+            column-gap: 50px;
+            margin-bottom: 42px;
+        }
+        .surat-meta {
+            display: grid;
+            grid-template-columns: 68px 12px 1fr;
+            row-gap: 3px;
+        }
+        .surat-address { line-height: 1.55; }
+        .surat-date { margin-bottom: 24px; }
+        .surat-body { padding: 0 38px; }
+        .surat-body p { margin: 0 0 22px 0; }
+        .surat-section {
+            display: grid;
+            grid-template-columns: 24px 1fr;
+            column-gap: 4px;
+            margin-bottom: 22px;
+        }
+        .surat-indent { padding-left: 0; }
+        .surat-money-row {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .surat-money-row strong { font-weight: 700; }
+        .surat-terbilang {
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        .surat-bank-list { font-weight: bold; }
+        .surat-sign {
+            width: 220px;
+            margin-left: auto;
+            text-align: center;
+            margin-top: 46px;
+        }
+        .surat-sign-space { height: 68px; }
+        .surat-underline { text-decoration: underline; }
+        .editable-print {
+            min-width: 120px;
+            display: inline-block;
+            /* border-bottom: 1px dotted #888; */
+            outline: none;
+        }
+        .surat-edit-input {
+            min-width: 205px;
+            max-width: 260px;
+            border: 1px solid #444;
+            border-radius: 2px;
+            padding: 1px 4px;
+            font: inherit;
+            font-weight: bold;
+            color: #000;
+            background: #fff;
+        }
+
+        /* PARAMETER PRINT JAMINAN SATU KERTAS PDF A4 - DIOPTIMALKAN (HURUF DIPERKECIL & RAPAT) */
+        @media print {
+            @page { size: A4 portrait; margin: 8mm 12mm 8mm 12mm; }
+            *, *::before, *::after { box-sizing: border-box; }
+            body { background-color: #fff; font-size: 8pt; line-height: 1.15; color: #000; padding: 0; margin: 0; width: 100%; }
+            .control-panel, .no-print, .toast-container, .page-nav, .page-toggle, .page-nav-wrapper { display: none !important; }
+            .page-section { display: block !important; }
+            .page-section:not(.page-1) { display: none !important; }
+            .page-1 { display: block !important; break-inside: avoid; page-break-inside: avoid; }
+
+            .report-container { box-shadow: none; margin: 0; padding: 0; width: 100% !important; max-width: 100% !important; min-width: 100% !important; }
+            .surat-container { box-shadow: none; margin: 0; padding: 0; width: 100% !important; min-height: auto; font-size: 9.5pt; line-height: 1.2; page-break-before: auto; }
+            .surat-header { grid-template-columns: 1fr 22mm; margin-bottom: 5mm; }
+            .pos-logo-img { width: 34mm; }
+            .surat-corner {
+                width: 22mm;
+                height: 22mm;
+                border-bottom-left-radius: 22mm;
+                background: #f23a21 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .surat-top-grid { margin-bottom: 16px; }
+            .surat-date { margin-bottom: 10px; }
+            .surat-body { padding: 0 22px; line-height: 1.2; }
+            .surat-section { margin-bottom: 8px; break-inside: avoid; page-break-inside: avoid; }
+            .surat-sign { margin-top: 16px; }
+            .surat-sign-space { height: 40px; }
+            .editable-print { border-bottom: none; }
+            .surat-edit-input { border: none !important; padding: 0 !important; width: auto !important; max-width: none !important; background: transparent !important; }
+            .report-container { display: block !important; }
+            
+            .header-title { padding: 6px 4px; font-size: 10pt; margin-bottom: 8px; background-color: #ffee55 !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .header-meta-grid { margin-top: 6px; font-size: 8pt; row-gap: 1px; }
+            
+            .table-report { margin-bottom: 8px; width: 100% !important; }
+            .table-report th { font-size: 8pt; padding: 2px 4px; background-color: #ffee55 !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .table-report td { padding: 2px 4px; font-size: 8pt; }
+            
+            .info-saldo-section { margin-top: 6px; }
+            .info-saldo-section .title-saldo { font-size: 8.5pt; margin-bottom: 4px; }
+            .info-saldo-section table { width: 100% !important; }
+            .info-saldo-section td { font-size: 8pt; padding: 2px 0; }
+            
+            .highlight-box { outline: 1px solid #000; }
+            .highlight-box td { background-color: #ffee55 !important; color: #000000 !important; padding: 3px 4px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            
+            .note-container { width: 100% !important; margin: 2px auto 6px auto; }
+            .note-text { font-size: 7.5pt; }
+            
+            .ttd-section { margin-top: 10px; page-break-inside: avoid; width: 100% !important; }
+            .ttd-table td { font-size: 8pt; }
+            .ttd-space { height: 45px; } /* Tinggi dipersempit agar muat 1 halaman namun ruang ttd fisik tetap ada */
+            .nippos-text { font-size: 7.5pt; }
+
+            #additionalPage { max-width: none !important; margin: 0 !important; }
+            #additionalPage .table-responsive { overflow: visible !important; }
+            .additional-table { width: 100% !important; table-layout: fixed; font-size: 6.5pt; }
+            .additional-table th, .additional-table td { padding: 2px 3px; font-size: 6.5pt; white-space: normal; overflow-wrap: anywhere; }
+            .additional-table thead { display: table-header-group; }
+            .additional-table tr { break-inside: avoid; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="dbToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body font-weight-bold">
+                Status: Database Terhubung! Data berhasil dimuat.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+        <img class="login-brand" src="https://lh3.googleusercontent.com/d/1ZxgZGywNjf2vICtCMUE7KYFPS9ltAwlL" alt="POS IND Logo">
+        <div class="login-title">LAPORAN PIUTANG KC ENDE 86300</div>
+        <div class="login-subtitle">Masuk ke aplikasi untuk mengelola Laporan Piutang.</div>
+
+        <div class="mb-3">
+            <label class="form-label" for="loginUsername">Username</label>
+            <input id="loginUsername" class="form-control" type="text" autocomplete="username" placeholder="Masukkan username">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input id="loginPassword" class="form-control" type="password" autocomplete="current-password" placeholder="Masukkan password">
+        </div>
+        <div class="mb-3 text-danger" id="loginError" style="display:none;"></div>
+        <button class="btn btn-primary btn-login" type="button" onclick="attemptLogin()">Masuk Aplikasi</button>
+        <div class="login-footer">Role: superuser / admin / user</div>
+    </div>
+</div>
+
+<div id="landingOverlay" class="landing-overlay">
+    <div class="landing-card">
+        <img class="landing-logo" src="https://lh3.googleusercontent.com/d/1ZxgZGywNjf2vICtCMUE7KYFPS9ltAwlL" alt="POS IND Logo">
+        <div class="landing-title">LAPORAN PIUTANG KC ENDE 86300</div>
+        <div class="landing-subtitle">Selamat Datang di Sistem Pelaporan Piutang.</div>
+        <div class="landing-user">Hai, <span id="landingUserName"></span></div>
+        <div class="landing-text">Menu ini membantu Anda mengakses ringkasan piutang, mengatur nomor surat, dan melihat data korporat dengan mudah. Ketuk Mulai untuk melanjutkan ke aplikasi.</div>
+        <button class="btn btn-primary" type="button" onclick="startApplication()">Mulai</button>
+        <div class="landing-notice">Gunakan tombol logout untuk keluar dan kembali ke halaman login.</div>
+    </div>
+</div>
+
+<!-- Additional Page (will be inserted under Surat) -->
+
+
+
+<div id="appContent" style="display:none;">
+<div class="control-panel no-print">
+        
+        <div class="d-flex flex-grow-1 flex-wrap gap-2 align-items-end">
+            <div id="panelIdKorporat" style="flex: 2; min-width: 180px;">
+                <label for="selectIdPelanggan" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Pilih ID Korporat:</label>
+                <select id="selectIdPelanggan" class="form-select form-select-sm" onchange="renderTabel(); populateAdditionalTable()">
+                    <option value="">Memuat data...</option>
+                </select>
+            </div>
+            
+            <div id="panelBulan" style="flex: 1; min-width: 100px;">
+                <label for="selectBulan" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Pilih Bulan:</label>
+                <select id="selectBulan" class="form-select form-select-sm" onchange="renderTabel(); populateAdditionalTable()">
+                    <option value="0">Januari</option>
+                    <option value="1">Februari</option>
+                    <option value="2">Maret</option>
+                    <option value="3" selected>April</option>
+                    <option value="4">Mei</option>
+                    <option value="5">Juni</option>
+                    <option value="6">Juli</option>
+                    <option value="7">Agustus</option>
+                    <option value="8">September</option>
+                    <option value="9">Oktober</option>
+                    <option value="10">November</option>
+                    <option value="11">Desember</option>
+                </select>
+            </div>
+            <div id="panelTahun" style="flex: 1; min-width: 80px;">
+                <label for="inputTahun" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Tahun:</label>
+                <input type="number" id="inputTahun" class="form-control form-control-sm" value="2026" min="2000" max="2100" onchange="renderTabel(); populateAdditionalTable()">
+            </div>
+            <div id="panelTanggalInvoice" style="flex: 1; min-width: 125px;">
+                <label for="inputTanggalInvoice" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Tanggal Invoice:</label>
+                <input type="date" id="inputTanggalInvoice" class="form-control form-control-sm" onchange="updateSuratTagihan(); updateInvoicePage()">
+            </div>
+            <div id="panelNomorSurat" style="flex: 1; min-width: 180px;">
+                <label for="inputNomorSurat" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Nomor Surat:</label>
+                <input type="text" id="inputNomorSurat" class="form-control form-control-sm" value="/Penjualan/Korporat/0326" oninput="updateSuratTagihan()">
+            </div>
+        </div>
+        
+        <div class="d-flex gap-2 justify-content-end align-items-center mt-2">
+            <button id="btnRefreshData" class="btn-custom-icon btn-sheets-icon" onclick="refreshData()" title="Refresh Data">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+            <button id="buttonBukaSpreadsheet" class="btn-custom-icon btn-sheets-icon" onclick="bukaSpreadsheet()" title="Buka Sheets">
+                <i class="fa-regular fa-folder-open"></i>
+            </button>
+            <button id="btnUploadCsv" class="btn-custom-icon btn-upload-icon" onclick="document.getElementById('csvInput').click()" title="Upload CSV">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </button>
+            <div class="btn-group">
+                <button id="btnPrint" type="button" class="btn-custom-icon btn-print-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Cetak Laporan">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('both'); return false;">Print Semua</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page1'); return false;">Rekap transaksi</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page2'); return false;">Invoice</a></li>
+                </ul>
+            </div>
+            <button id="btnExportExcel" class="btn-custom-icon btn-sheets-icon" onclick="exportAdditionalToCSV()" title="Export Excel">
+                <i class="fa-solid fa-file-export"></i>
+            </button>
+            <button id="btnWA" class="btn-custom-icon btn-wa-icon" onclick="kirimKeWhatsApp()" title="Kirim WA">
+                <i class="fa-brands fa-whatsapp"></i>
+            </button>
+            <button id="btnLogout" class="btn-custom-icon btn-custom-icon btn-upload-icon" onclick="logout()" title="Logout" style="display:none;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
+        <div id="loggedInfo" class="role-info text-end" style="display:none;">
+            <strong>Login:</strong> <span id="loggedUserName"></span> (<span id="loggedRole"></span>)
+        </div>
+
+    
+<div class="mt-2 w-100">
+    <input type="file" id="csvInput" accept=".csv" multiple hidden>
+    <div class="progress" style="height: 16px; border-radius: 6px; overflow: hidden;">
+        <div id="uploadProgress" class="progress-bar progress-bar-striped progress-bar-animated"
+             style="width:0%">0%</div>
+    </div>
+</div>
+
+</div>
+</div>
+
+<div class="page-nav-wrapper no-print" aria-label="Navigasi Halaman Laporan">
+    <div class="page-nav" role="group">
+        <button type="button" id="btnPage1" class="page-toggle active" onclick="setActivePage(1)">Rekap transaksi</button>
+        <button type="button" id="btnPage2" class="page-toggle" onclick="setActivePage(2)">Invoice</button>
+    </div>
+</div>
+
+<div class="page-section page-1 active">
+<div class="report-container">
+    <div class="header-title">
+
+        DAFTAR TRANSAKSI PENGIRIMAN SURAT DAN PAKET
+        <div class="header-meta-grid">
+            <div>Nama Pelanggan</div>
+            <div>: <span id="headerNamaKorporat">-</span></div>
+            
+            <div>ID Korporat</div>
+            <div>: <span id="headerKode">-</span></div>
+            
+            <div>Periode Transaksi</div>
+            <div>: <span id="headerBulan">-</span></div>
+        </div>
+    </div>
+
+    <table class="table-report">
+        <thead>
+            <tr>
+                <th>NO</th>
+                <th>TANGGAL PENGIRIMAN</th> 
+                <th>JUMLAH KIRIMAN</th>
+                <th>BIAYA PENGIRIMAN</th>
+            </tr>
+        </thead>
+        <tbody id="tabelBody"></tbody>
+    </table>
+
+    <div class="info-saldo-section">
+        <div class="title-saldo">INFORMASI SALDO</div>
+        <table>
+            <tr class="saldo-lalu-row">
+                <td class="label-saldo">SALDO BULAN LALU</td>
+                <td class="rp-saldo">Rp.</td>
+                <td class="nilai-saldo" id="saldoLalu">-</td>
+            </tr>
+            <tr>
+                <td class="label-saldo">PENGIRIMAN SURAT DAN PAKET BULAN INI</td>
+                <td class="rp-saldo">Rp.</td>
+                <td class="nilai-saldo" id="saldoPengiriman">-</td>
+            </tr>
+            <tr>
+                <td class="label-saldo">BIAYA PACKING</td>
+                <td class="rp-saldo">Rp.</td>
+                <td class="nilai-saldo" id="biayaPacking">-</td>
+            </tr>
+            <tr>
+                <td class="label-saldo">DENDA KETERLAMBATAN PELUNASAN</td>
+                <td class="rp-saldo">Rp.</td>
+                <td class="nilai-saldo" id="pelunasanTagihan">-</td>
+            </tr>
+            <tr class="highlight-box">
+                <td class="label-saldo">SALDO AKHIR</td>
+                <td class="rp-saldo">Rp.</td>
+                <td class="nilai-saldo" id="saldoAkhir">-</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="ttd-section">
+        <table class="ttd-table">
+            <tr>
+                <td>
+                    <p class="mb-0">Mengetahui</p>
+                    <p class="mb-0">Spv. Adminkug dan Dukum</p>
+                    <div class="ttd-space"></div> <p class="ttd-nama">Maria Pratiwi Laka</p>
+                    <p class="nippos-text">Nippos: 987413417</p>
+                </td>
+                <td>
+                    <p class="mb-0">Yang Membuat<br>Spv. Penjualan Bisnis Korporat</p>
+                    <div class="ttd-space"></div> <p class="ttd-nama">EDISON LEONARD</p>
+                    <p class="nippos-text">Nippos: 984413376</p>
+                </td>
+            </tr>
+        </table>
+</div>
+</div>
+
+</div>
+
+<div class="page-section page-2">
+    <div class="invoice-reference-page">
+        <div hidden>
+            <span id="invoiceNomor"></span><span id="invoiceRekening"></span><span id="invoiceNpwp"></span>
+            <input id="invoiceTanggal"><input id="invoiceJatuhTempo"><input id="invoiceTaxRate" value="0">
+            <input id="invoiceDiscount" value="0"><input id="invoiceDendaRate" value="0">
+            <span id="suratNomor"></span><span id="suratTanggal"></span><span id="suratPeriodePerihal"></span>
+            <span id="suratNamaKorporat"></span><span id="suratNamaKorporatPks"></span><span id="suratNoPksPos"></span>
+            <span id="suratNoPksKorporat"></span><span id="suratSaldoAkhir"></span><span id="suratTerbilang"></span>
+        </div>
+        <div class="invoice-reference-header">
+            <img class="invoice-reference-logo" src="https://lh3.googleusercontent.com/d/1ZxgZGywNjf2vICtCMUE7KYFPS9ltALwL" alt="POS IND">
+            <div class="invoice-reference-form">Form Piutang-2 Cetakan ke : <select id="invoiceCopyNumber" aria-label="Nomor cetakan invoice"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option></select></div>
+            <div class="invoice-reference-company">
+                <div>PT POS INDONESIA (PERSERO)</div>
+                <div>NPWP : 01.001.620.2-093-000</div>
+                <div>Jl. Banda No. 30 Citarum, Bandung Wetan, Kota Bandung</div>
+                <div>Jawa Barat 40115</div>
+                <div>KANTOR POS ENDE 86300</div>
+            </div>
+        </div>
+
+        <div class="invoice-reference-meta">
+            <div class="invoice-reference-recipient">
+                <div>Pelanggan Yth.</div>
+                <div>Bpk / Ibu Pimpinan</div>
+                <div id="invoiceNamaPelanggan">-</div>
+            </div>
+            <div class="invoice-reference-details">
+                <strong>INVOICE</strong><span></span><span></span>
+                <span>No. Tagihan</span><span>:</span><span id="invoiceNomorPengantar">-</span>
+                <span>No. PKS</span><span>:</span><span id="invoiceIdPelanggan">-</span>
+                <span>Periode Tagihan</span><span>:</span><span id="invoicePeriode">-</span>
+            </div>
+        </div>
+
+        <div class="invoice-reference-intro">
+            <div>Dengan Hormat,</div>
+            <div>Disampaikan tagihan atas transaksi Bulan <strong id="invoicePeriod">-</strong>, sebesar <strong id="invoiceJumlah">0</strong></div>
+            <div>(<strong><em id="invoiceTerbilang">Nol Rupiah</em></strong>)</div>
+            <div>Rincian Transaksi sebagai berikut :</div>
+        </div>
+
+        <table class="invoice-reference-table">
+            <thead>
+                <tr><th>No</th><th>URAIAN</th><th>Produk</th><th>Jumlah transaksi</th><th>Besar Uang</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1.</td><td>ONGKIR Bulan <span id="invoicePeriodTable">-</span></td><td>Paket</td><td><span id="invoiceUnit">0</span> pcs</td><td id="invoiceSubtotal">0</td></tr>
+                <tr><td></td><td>PPN PAKET</td><td></td><td></td><td id="invoicePajak">0</td></tr>
+                <tr class="invoice-highlight"><td></td><td>TOTAL BRUTO</td><td></td><td></td><td id="invoiceBruto">0</td></tr>
+                <tr><td></td><td>DISKON KORPOR 10 %</td><td></td><td></td><td id="invoiceDiskon">0</td></tr>
+                <tr><td></td><td>PPN SETELAH DISKON</td><td></td><td></td><td id="invoicePpnSetelahDiskon">0</td></tr>
+                <tr><td></td><td>HTNB / ASURANSI</td><td></td><td></td><td id="invoiceDenda">0</td></tr>
+                <tr><td></td><td>PPN HTNB</td><td></td><td></td><td>0</td></tr>
+                <tr class="invoice-highlight"><td></td><td>TOTAL PIUTANG NETTING</td><td></td><td></td><td id="invoiceNetting">0</td></tr>
+                <tr><td></td><td>PPH 23 BUPOT ( 2% dr ONGKIR NETTING)</td><td></td><td></td><td id="invoicePph23">0</td></tr>
+                <tr class="invoice-highlight"><td></td><td>TOTAL YANG HARUS DITFR MITRA</td><td></td><td></td><td id="invoiceTotal">0</td></tr>
+            </tbody>
+        </table>
+
+        <div class="invoice-reference-footer-note">
+            <div>Besarnya biaya tagihan tersebut mohon ditransfer ke rekening sbb :</div>
+            <div>BRI : 0024-01-001238-30-3 a/n POS INDONESIA</div>
+            <div>BRIVA : 1394908130000 a/n P088630000 ENDE</div>
+            <div>BNI : 54731889 a/n DIVRE 8 KP ENDE</div>
+            <div>VA BNI : 9885614886300813 a/n 86300 ENDE</div>
+            <div>MANDIRI : 161-0000-86300-6 a/n POS INDONESIA</div>
+            <div>mohon konfirmasi ke no hp 081339221840 an. Edison Leonard dengan melampirkan<br>foto bukti transfer yang bertalian.</div>
+        </div>
+        <div class="invoice-reference-signature">
+            <div><div>Mengetahui,</div><div>Kepala Kantor Pos,</div><div class="invoice-reference-sign-space"></div><strong>HANNAN</strong><div>Nippos: 983390370</div></div>
+            <div><div id="invoiceReferenceDate">Ende, -</div><div>Manajer KeuanFBPgan,</div><div class="invoice-reference-sign-space"></div><strong>MARIA PRATIWI LAKA</strong><div>Nippos: 987413417</div></div>
+        </div>
+        <div class="invoice-reference-bottom-notes">
+            <div>Catatan : Nilai tagihan di atas dapat berubah sesuai dengan kesepakatan dalam masalah perpajakan dengan<br>pelanggan yang menjadi Wajib Pungut.</div>
+            <div>tanggal 15 akan dikenakan denda sebesar 1 % dan melewati tanggal 26 maka akan dikenakan denda sebesar<br>2% , dan jika melewati 1 (satu) bulan transaksi akan dikenakan 2% dari akumulasi tagihan plus denda</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6_b2SaUXQ6UMBQ-zv0jwXln-ptExbmot4u8qnjol90ARBRewofXvgFXrZkgAjLQGu4Q/exec";
+    const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1wMYjpJDuQjcfDhJZgOamkgxt75e1tkeyutyv8P0cq7c/edit?usp=sharing";
+    
+    const USER_ROLES = {
+        SUPERUSER: 'superuser',
+        ADMIN: 'admin',
+        USER: 'user'
+    };
+
+    let cloudData = { laporanUtama: [], saldoLalu: [], pelunasan: [], packing: [], users: [] };
+    let currentUser = null;
+    let currentRole = '';
+    let globalNamaKorporat = ""; 
+    let waSummary = { totalItem: 0, totalBiayaNum: 0, biayaPackingNum: 0, saldoAkhirNum: 0 };
+    let invoiceSummary = { jumlahUnit: 0, tarifPerUnit: 0, subtotal: 0, diskon: 0, denda: 0, pajak: 0, total: 0 };
+    
+    const namaBulanIndo = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
+    const namaBulanEng = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    function parseTanggal(value) {
+        if (!value) return null;
+
+        const raw = value.toString().trim();
+        let match = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
+        if (match) {
+            return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+        }
+
+        match = raw.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+        if (match) {
+            return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        }
+
+        match = raw.match(/^(\d{1,2})[-/\s]([A-Za-z]{3,}|\d{1,2})[-/\s](\d{4})$/);
+        if (match) {
+            const monthIndex = monthToIndex(match[2]);
+            if (monthIndex >= 0) {
+                return new Date(Number(match[3]), monthIndex, Number(match[1]));
+            }
+        }
+
+        const parsed = new Date(raw);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function monthToIndex(value) {
+        const raw = value.toString().trim().toLowerCase();
+        if (/^\d+$/.test(raw)) {
+            const index = Number(raw) - 1;
+            return index >= 0 && index <= 11 ? index : -1;
+        }
+
+        const months = {
+            jan: 0, januari: 0, january: 0,
+            feb: 1, februari: 1, february: 1,
+            mar: 2, maret: 2, march: 2,
+            apr: 3, april: 3,
+            mei: 4, may: 4,
+            jun: 5, juni: 5, june: 5,
+            jul: 6, juli: 6, july: 6,
+            agu: 7, agustus: 7, aug: 7, august: 7,
+            sep: 8, september: 8,
+            okt: 9, oktober: 9, oct: 9,
+            nov: 10, november: 10,
+            des: 11, desember: 11, dec: 11
+        };
+
+        return months[raw] !== undefined ? months[raw] : (months[raw.substring(0, 3)] ?? -1);
+    }
+
+    function angkaBersih(value) {
+        return (value || "0").toString().replace(/[^\d-]/g, "") || "0";
+    }
+
+    function terlihatSepertiIdKorporat(value) {
+        return /^[A-Z0-9]+$/.test((value || "").toString().trim().toUpperCase());
+    }
+
+    function formatRupiah(value) {
+        return (parseInt(value) || 0).toLocaleString('id-ID');
+    }
+
+    function formatDiscountInput(input) {
+        const rawValue = input.value;
+        const cursorPosition = input.selectionStart ?? rawValue.length;
+        const digitsBeforeCursor = rawValue.slice(0, cursorPosition).replace(/\D/g, '').length;
+        const digits = rawValue.replace(/\D/g, '');
+        input.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+
+        let nextCursorPosition = 0;
+        let digitsCounted = 0;
+        while (nextCursorPosition < input.value.length && digitsCounted < digitsBeforeCursor) {
+            if (/\d/.test(input.value[nextCursorPosition])) digitsCounted++;
+            nextCursorPosition++;
+        }
+        input.setSelectionRange(nextCursorPosition, nextCursorPosition);
+    }
+
+    function formatTanggalAkhirBulan(bulanIndex, tahun) {
+        const akhirBulan = new Date(tahun, bulanIndex + 1, 0).getDate();
+        const namaBulanSurat = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        return `Ende, ${akhirBulan} ${namaBulanSurat[bulanIndex]} ${tahun}`;
+    }
+
+    function formatTanggalInvoice(dateValue) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue || "");
+        if (!match) return "";
+        const [, tahun, bulan, tanggal] = match;
+        const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        return `${Number(tanggal)} ${namaBulan[Number(bulan) - 1].toUpperCase()} ${tahun}`;
+    }
+
+    function updateJatuhTempoDariInvoice(invoiceDateInput, dueDateInput) {
+        if (!invoiceDateInput || !dueDateInput) return;
+
+        const invoiceDateText = invoiceDateInput.value.trim();
+        if (!invoiceDateText || invoiceDateInput.dataset.dueDateSource === invoiceDateText) return;
+
+        const invoiceDate = parseTanggal(invoiceDateText);
+        if (!invoiceDate) return;
+
+        invoiceDate.setDate(invoiceDate.getDate() + 15);
+        dueDateInput.value = `${invoiceDate.getDate()} ${namaBulanIndo[invoiceDate.getMonth()]} ${invoiceDate.getFullYear()}`;
+        invoiceDateInput.dataset.dueDateSource = invoiceDateText;
+    }
+
+    function kapitalAwalKalimat(text) {
+        if (!text) return "";
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function kapitalSetiapKata(text) {
+        return (text || "").replace(/\b\w/g, huruf => huruf.toUpperCase());
+    }
+
+    function terbilang(nilai) {
+        nilai = Math.floor(Math.abs(parseInt(nilai) || 0));
+        const angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+
+        if (nilai < 12) return angka[nilai];
+        if (nilai < 20) return terbilang(nilai - 10) + " belas";
+        if (nilai < 100) return terbilang(Math.floor(nilai / 10)) + " puluh" + (nilai % 10 ? " " + terbilang(nilai % 10) : "");
+        if (nilai < 200) return "seratus" + (nilai % 100 ? " " + terbilang(nilai - 100) : "");
+        if (nilai < 1000) return terbilang(Math.floor(nilai / 100)) + " ratus" + (nilai % 100 ? " " + terbilang(nilai % 100) : "");
+        if (nilai < 2000) return "seribu" + (nilai % 1000 ? " " + terbilang(nilai - 1000) : "");
+        if (nilai < 1000000) return terbilang(Math.floor(nilai / 1000)) + " ribu" + (nilai % 1000 ? " " + terbilang(nilai % 1000) : "");
+        if (nilai < 1000000000) return terbilang(Math.floor(nilai / 1000000)) + " juta" + (nilai % 1000000 ? " " + terbilang(nilai % 1000000) : "");
+        return terbilang(Math.floor(nilai / 1000000000)) + " milyar" + (nilai % 1000000000 ? " " + terbilang(nilai % 1000000000) : "");
+    }
+
+    function terbilangRupiah(nilai) {
+        const angka = parseInt(nilai) || 0;
+        if (angka === 0) return "Nol Rupiah";
+        return kapitalSetiapKata(terbilang(angka) + " rupiah");
+    }
+
+    function showLoginError(message) {
+        const error = document.getElementById('loginError');
+        if (!error) return;
+        error.innerText = message || 'Login gagal.';
+        error.style.display = 'block';
+    }
+
+    function clearLoginError() {
+        const error = document.getElementById('loginError');
+        if (!error) return;
+        error.innerText = '';
+        error.style.display = 'none';
+    }
+
+    function showLoginOverlay() {
+        hideAppContent();
+        const overlay = document.getElementById('loginOverlay');
+        if (overlay) overlay.style.display = 'flex';
+    }
+
+    function hideLoginOverlay() {
+        const overlay = document.getElementById('loginOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    function showLandingOverlay() {
+        const overlay = document.getElementById('landingOverlay');
+        const name = document.getElementById('landingUserName');
+        if (name && currentUser) {
+            name.innerText = currentUser.displayName || currentUser.username;
+        }
+        if (overlay) overlay.style.display = 'flex';
+    }
+
+
+    function parseNumberForCalc(val) {
+        if (!val && val !== 0) return 0;
+        const cleaned = (val || '').toString().replace(/[^0-9.-]/g, '');
+        return parseFloat(cleaned) || 0;
+    }
+
+    function populateAdditionalTable() {
+        const tbody = document.getElementById('additionalTableBody');
+        tbody.innerHTML = '';
+
+        const targetId = document.getElementById('selectIdPelanggan').value.trim().toUpperCase();
+        const bulanDipilih = parseInt(document.getElementById('selectBulan').value);
+        const tahunDipilih = parseInt(document.getElementById('inputTahun').value);
+
+        const data = Array.isArray(cloudData.laporanUtama) ? cloudData.laporanUtama : [];
+        const noSuratRows = Array.isArray(cloudData.noSurat) ? cloudData.noSurat : [];
+
+        // Ambil NPWP & ALAMAT dari sheet No_surat
+        const noSuratItem = noSuratRows.find(x => (x.idPelanggan || '').toString().trim().toUpperCase() === targetId) || {};
+        const npwpFromNoSurat = (noSuratItem.npwp || '').toString().trim();
+        const alamatFromNoSurat = (noSuratItem.alamat || '').toString().trim();
+
+        const rows = data.filter(r => {
+            if (!r.idPelanggan) return false;
+            if (r.idPelanggan.toString().trim().toUpperCase() !== targetId) return false;
+            const dt = parseTanggal(r.tglTrx);
+            if (!dt) return false;
+            return dt.getMonth() === bulanDipilih && dt.getFullYear() === tahunDipilih;
+        });
+
+        rows.sort((a,b) => {
+            const da = parseTanggal(a.tglTrx) || new Date(0);
+            const db = parseTanggal(b.tglTrx) || new Date(0);
+            return da - db;
+        });
+
+        rows.forEach((row, idx) => {
+            const nomor = idx + 1;
+            const tanggal = row.tglTrx || '';
+            const nama = row.namaKorporat || '';
+
+            // fallback: dari laporanUtama jika No_surat kosong
+            const npwp = npwpFromNoSurat || row.npwp || '';
+            const alamat = alamatFromNoSurat || row.alamat || '';
+
+            const pendapatanNum = parseNumberForCalc(row.total);
+            const dpp = pendapatanNum * (100/111);
+            const ppn = dpp * 0.11;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${nomor}</td>
+                <td>${tanggal}</td>
+                <td><input class="form-control form-control-sm" data-field="nodoc" value=""></td>
+                <td><input class="form-control form-control-sm" data-field="npwp" value="${escapeHtml(npwp)}"></td>
+                <td>${escapeHtml(nama)}</td>
+                <td><input class="form-control form-control-sm" data-field="alamat" value="${escapeHtml(alamat)}"></td>
+                <td><input class="form-control form-control-sm" data-field="keterangan" value=""></td>
+                <td class="text-num">${formatNumber(pendapatanNum)}</td>
+                <td class="text-num">${formatNumber(dpp)}</td>
+                <td class="text-num">${formatNumber(ppn)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Tidak ada data untuk ID terpilih.</td></tr>';
+        }
+    }
+
+    function exportAdditionalToCSV() {
+        const rows = [];
+        const header = ['No','Tanggal Transaksi','No.Doc (SAP)','NPWP','NAMA MITRA','ALAMAT','Keterangan','PENDAPATAN','DPP','PPN'];
+        rows.push(header);
+        const tbody = document.getElementById('additionalTableBody');
+        if (!tbody) return;
+        const trList = tbody.querySelectorAll('tr');
+        trList.forEach(tr => {
+            const cells = tr.children;
+            if (!cells || cells.length < 10) return;
+            const no = cells[0].innerText.trim();
+            const tanggal = cells[1].innerText.trim();
+            const nodoc = (cells[2].querySelector('input') || {}).value || '';
+            const npwp = (cells[3].querySelector('input') || {}).value || '';
+            const nama = cells[4].innerText.trim();
+            const alamat = (cells[5].querySelector('input') || {}).value || '';
+            const keterangan = (cells[6].querySelector('input') || {}).value || '';
+            const pendapatan = parseNumberForCalc(cells[7].innerText || cells[7].textContent);
+            const dpp = parseNumberForCalc(cells[8].innerText || cells[8].textContent);
+            const ppn = parseNumberForCalc(cells[9].innerText || cells[9].textContent);
+            rows.push([no,tanggal,nodoc,npwp,nama,alamat,keterangan,pendapatan,dpp,ppn]);
+        });
+
+        if (rows.length <= 1) { alert('Tidak ada data untuk diekspor.'); return; }
+
+        const csvContent = rows.map(r => r.map(cell => '"' + String(cell).replace(/"/g,'""') + '"').join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const id = document.getElementById('selectIdPelanggan').value || 'ID';
+        const bulan = document.getElementById('selectBulan').value;
+        const tahun = document.getElementById('inputTahun').value;
+        a.download = `halaman3_${id}_${bulan}_${tahun}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function formatNumber(num) {
+        return (Math.round((num || 0) * 100) / 100).toLocaleString('en-US');
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>"]+/g, function (s) {
+            return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]);
+        });
+    }
+
+    function hideLandingOverlay() {
+        const overlay = document.getElementById('landingOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    function showAppContent() {
+        const app = document.getElementById('appContent');
+        if (app) app.style.display = 'block';
+    }
+
+    function hideAppContent() {
+        const app = document.getElementById('appContent');
+        if (app) app.style.display = 'none';
+    }
+
+    function showToast(message, type = 'success') {
+        const toastElement = document.getElementById('dbToast');
+        if (!toastElement) return;
+        const body = toastElement.querySelector('.toast-body');
+        if (body) body.innerText = message || '';
+        toastElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+        toastElement.classList.add(type === 'danger' ? 'bg-danger' : type === 'warning' ? 'bg-warning' : type === 'info' ? 'bg-info' : 'bg-success');
+        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        toast.show();
+    }
+
+    function updateRoleUI() {
+        const isSuper = currentRole === USER_ROLES.SUPERUSER;
+        const isAdmin = currentRole === USER_ROLES.ADMIN;
+        const isUser = currentRole === USER_ROLES.USER;
+        const isLoggedIn = Boolean(currentUser);
+
+        document.getElementById('buttonBukaSpreadsheet').style.display = isSuper ? 'inline-flex' : 'none';
+        // debug-panel removed
+        document.getElementById('panelIdKorporat').style.display = (isSuper || isAdmin || isUser) ? 'block' : 'none';
+        document.getElementById('panelBulan').style.display = (isSuper || isAdmin || isUser) ? 'block' : 'none';
+        document.getElementById('panelTahun').style.display = (isSuper || isAdmin || isUser) ? 'block' : 'none';
+        document.getElementById('panelNomorSurat').style.display = (isSuper || isAdmin) ? 'block' : 'none';
+        document.getElementById('btnPrint').style.display = (isSuper || isAdmin) ? 'inline-flex' : 'none';
+        document.getElementById('btnWA').style.display = (isSuper || isAdmin) ? 'inline-flex' : 'none';
+        document.getElementById('btnExportExcel').style.display = (isSuper || isAdmin) ? 'inline-flex' : 'none';
+        document.getElementById('btnLogout').style.display = isLoggedIn ? 'inline-flex' : 'none';
+        document.getElementById('btnUploadCsv').style.display = isLoggedIn ? 'inline-flex' : 'none';
+
+        const reportContainer = document.querySelector('.report-container');
+        const suratContainer = document.querySelector('.surat-container');
+        const showAppContent = isSuper || isAdmin || isUser;
+        if (reportContainer) reportContainer.style.display = showAppContent ? 'block' : 'none';
+        if (suratContainer) suratContainer.style.display = showAppContent ? 'block' : 'none';
+
+        const loggedInfo = document.getElementById('loggedInfo');
+        if (loggedInfo) {
+            loggedInfo.style.display = isLoggedIn ? 'block' : 'none';
+            document.getElementById('loggedUserName').innerText = currentUser ? currentUser.displayName : '';
+            document.getElementById('loggedRole').innerText = currentUser ? currentUser.role : '';
+        }
+    }
+
+    function logout() {
+        currentUser = null;
+        currentRole = '';
+        hideLandingOverlay();
+        hideAppContent();
+        showLoginOverlay();
+        updateRoleUI();
+        showToast('Anda berhasil logout.', 'info');
+    }
+
+    function startApplication() {
+        hideLandingOverlay();
+        showAppContent();
+        updateRoleUI();
+        showToast(`Selamat datang ${currentUser ? currentUser.displayName : 'Pengguna'}!`, 'success');
+    }
+
+    async function attemptLogin() {
+        clearLoginError();
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        if (!username || !password) {
+            showLoginError('Username dan password wajib diisi.');
+            return;
+        }
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', username, password })
+            });
+
+            const result = await response.json();
+            if (!result.success) {
+                showLoginError(result.message || 'Login gagal.');
+                return;
+            }
+
+            currentUser = result.user;
+            currentRole = currentUser.role || '';
+            hideLoginOverlay();
+            updateRoleUI();
+            showLandingOverlay();
+
+            // Always fetch data for all roles including USER
+            await ambilDataDariSheets();
+        } catch (err) {
+            console.error(err);
+            showLoginError('Terjadi kesalahan saat login.');
+        }
+    }
+
+    function cariNoSurat(targetIdPelanggan) {
+        const rows = Array.isArray(cloudData.noSurat) ? cloudData.noSurat : [];
+        return rows.find(row => (row.idPelanggan || "").trim().toUpperCase() === targetIdPelanggan) || {};
+    }
+
+    function ambilFieldNoSurat(row, daftarKey) {
+        for (const key of daftarKey) {
+            if (row[key]) return row[key];
+        }
+
+        const normalizedKeys = Object.keys(row).reduce((acc, key) => {
+            acc[key.toLowerCase()] = row[key];
+            return acc;
+        }, {});
+
+        for (const key of daftarKey) {
+            const value = normalizedKeys[key.toLowerCase()];
+            if (value) return value;
+        }
+
+        return "-";
+    }
+
+    function updateSuratTagihan() {
+        const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
+        const tahunDipilih = parseInt(document.getElementById("inputTahun").value);
+        const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
+        const nomorSurat = document.getElementById("inputNomorSurat").value.trim() || "/Penjualan/Korporat/0326";
+        const noSurat = cariNoSurat(targetIdPelanggan);
+        const namaKorporat = globalNamaKorporat || "-";
+        const saldoAkhir = invoiceSummary.total ?? waSummary.saldoAkhirNum ?? 0;
+        document.getElementById("suratNomor").innerText = nomorSurat;
+        const invoiceNomorPengantar = document.getElementById("invoiceNomorPengantar");
+        if (invoiceNomorPengantar) {
+            invoiceNomorPengantar.innerText = nomorSurat;
+        }
+        const suratTanggalText = formatTanggalAkhirBulan(bulanDipilih, tahunDipilih);
+        document.getElementById("suratTanggal").innerText = suratTanggalText;
+        const invoiceDatePicker = document.getElementById("inputTanggalInvoice");
+        if (invoiceDatePicker && !invoiceDatePicker.value && Number.isFinite(tahunDipilih) && Number.isInteger(bulanDipilih)) {
+            const lastDay = new Date(tahunDipilih, bulanDipilih + 1, 0).getDate();
+            invoiceDatePicker.value = `${tahunDipilih}-${String(bulanDipilih + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+        }
+        const invoiceDateInput = document.getElementById("invoiceTanggal");
+        if (invoiceDateInput) {
+            invoiceDateInput.value = formatTanggalInvoice(invoiceDatePicker && invoiceDatePicker.value) || suratTanggalText.replace(/^Ende,\s*/i, "").toUpperCase();
+        }
+        updateJatuhTempoDariInvoice(invoiceDateInput, document.getElementById("invoiceJatuhTempo"));
+        document.getElementById("suratPeriodePerihal").innerText = `${kapitalAwalKalimat(namaBulanIndo[bulanDipilih].toLowerCase())} ${tahunDipilih}`;
+        document.getElementById("suratNamaKorporat").innerText = namaKorporat;
+        document.getElementById("suratNamaKorporatPks").innerText = namaKorporat;
+        document.getElementById("suratNoPksPos").innerText = ambilFieldNoSurat(noSurat, ["No_pks_pos", "no_pks_pos"]);
+        document.getElementById("suratNoPksKorporat").innerText = ambilFieldNoSurat(noSurat, ["No_pks_korporat", "no_pks_korporat"]);
+        document.getElementById("suratSaldoAkhir").innerText = formatRupiah(saldoAkhir);
+        document.getElementById("suratTerbilang").innerText = terbilangRupiah(saldoAkhir);
+    }
+
+    function updateInvoicePage() {
+        const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
+        const tahunDipilih = parseInt(document.getElementById("inputTahun").value);
+        const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
+        const nomorSurat = document.getElementById("inputNomorSurat").value.trim() || "/Penjualan/Korporat/0326";
+        const noSurat = cariNoSurat(targetIdPelanggan);
+        const npwp = ((noSurat.npwp || "").toString().trim()) || "-";
+        const namaPelanggan = globalNamaKorporat || "-";
+        const invoiceNumber = `INV/${tahunDipilih}/${String(bulanDipilih + 1).padStart(2, '0')}/${targetIdPelanggan || 'CUSTOMER'}`;
+        const invoiceDateInput = document.getElementById("invoiceTanggal");
+        const invoiceDateText = (invoiceDateInput && invoiceDateInput.value && invoiceDateInput.value.trim()) ? invoiceDateInput.value.trim() : `${new Date().getDate()} ${namaBulanIndo[new Date().getMonth()]} ${new Date().getFullYear()}`;
+        if (invoiceDateInput) {
+            invoiceDateInput.value = invoiceDateText;
+        }
+        document.getElementById("invoiceReferenceDate").innerText = `Ende, ${invoiceDateText}`;
+
+        const dueDateInput = document.getElementById("invoiceJatuhTempo");
+        updateJatuhTempoDariInvoice(invoiceDateInput, dueDateInput);
+
+        const taxRateInput = document.getElementById("invoiceTaxRate");
+        const taxRate = taxRateInput ? (parseFloat(taxRateInput.value) || 0) : 0;
+
+        const discountInput = document.getElementById("invoiceDiscount");
+        const discount = discountInput ? (parseInt(discountInput.value.replace(/\D/g, ''), 10) || 0) : 0;
+
+        const dendaRateInput = document.getElementById("invoiceDendaRate");
+        const dendaRate = dendaRateInput ? (parseFloat(dendaRateInput.value) || 0) : 0;
+
+        const subtotal = invoiceSummary.subtotal || 0;
+        const diskon = discount;
+        const denda = subtotal * (dendaRate / 100);
+        const pajak = subtotal * (taxRate / 100);
+        const totalNetting = Math.max(0, subtotal - diskon + denda);
+        const pelangganPph23Dikecualikan = [
+            "BANKBNI08863A",
+            "BANKBRI",
+            "LNPNENDE08863A",
+            "LNKARANTIN08863A",
+            "LNMAPAG05863A",
+            "BANKMANDIRI08863A",
+            "LNKPP08863A",
+            "LNKPPN08863A"
+        ].includes(targetIdPelanggan);
+        const nilaiPph23 = pelangganPph23Dikecualikan ? 0 : Math.round(totalNetting * 0.02);
+        const total = Math.max(0, totalNetting - nilaiPph23);
+        const unit = invoiceSummary.jumlahUnit || 0;
+        const tarif = invoiceSummary.tarifPerUnit || 0;
+
+        document.getElementById("invoiceNomor").innerText = invoiceNumber;
+        const invoiceDateValue = (invoiceDateInput && invoiceDateInput.value && invoiceDateInput.value.trim()) ? invoiceDateInput.value.trim() : `${new Date().getDate()} ${namaBulanIndo[new Date().getMonth()]} ${new Date().getFullYear()}`;
+        if (invoiceDateInput) {
+            invoiceDateInput.value = invoiceDateValue;
+        }
+        document.getElementById("invoiceNomorPengantar").innerText = nomorSurat;
+        const rekeningList = [
+            "BRI : 0024-01-001238-30-3 a/n POS INDONESIA",
+            "BRIVA : 1394908130000 a/n P088630000 ENDE",
+            "BNI : 54731889 a/n DIVRE 8 KP ENDE",
+            "VA BNI : 9885614886300813 a/n 86300 ENDE",
+            "MANDIRI : 161-0000-86300-6 a/n POS INDONESIA"
+        ];
+        const rekeningEl = document.getElementById("invoiceRekening");
+        if (rekeningEl) {
+            rekeningEl.innerHTML = rekeningList.map((item) => `<div>${item}</div>`).join('');
+        }
+        document.getElementById("invoiceNamaPelanggan").innerText = namaPelanggan;
+        document.getElementById("invoiceIdPelanggan").innerText = ambilFieldNoSurat(noSurat, ["No_pks_korporat", "no_pks_korporat"]) || targetIdPelanggan || "-";
+        document.getElementById("invoiceNpwp").innerText = npwp;
+        const selectedPeriodText = `${namaBulanIndo[bulanDipilih]} ${tahunDipilih}`;
+        document.getElementById("invoicePeriode").innerText = selectedPeriodText;
+
+        document.getElementById("invoicePeriod").innerText = selectedPeriodText;
+        document.getElementById("invoicePeriodTable").innerText = selectedPeriodText;
+        document.getElementById("invoiceUnit").innerText = unit.toLocaleString('en-US');
+        document.getElementById("invoiceJumlah").innerText = `Rp ${formatRupiah(subtotal)}`;
+        document.getElementById("invoiceTerbilang").innerText = terbilangRupiah(subtotal);
+        document.getElementById("invoiceSubtotal").innerText = formatRupiah(subtotal);
+        document.getElementById("invoiceBruto").innerText = formatRupiah(subtotal + pajak);
+        document.getElementById("invoiceDiskon").innerText = formatRupiah(diskon);
+        document.getElementById("invoicePpnSetelahDiskon").innerText = formatRupiah(Math.max(0, pajak - diskon));
+        document.getElementById("invoiceDenda").innerText = formatRupiah(denda);
+        document.getElementById("invoicePajak").innerText = formatRupiah(pajak);
+        document.getElementById("invoiceNetting").innerText = formatRupiah(totalNetting);
+        document.getElementById("invoicePph23").innerText = formatRupiah(nilaiPph23);
+        document.getElementById("invoiceTotal").innerText = formatRupiah(total);
+        invoiceSummary.total = total;
+        document.getElementById("suratSaldoAkhir").innerText = formatRupiah(total);
+        document.getElementById("suratTerbilang").innerText = terbilangRupiah(total);
+    }
+
+    
+async function ambilDataDariSheets() {
+    try {
+
+        const response = await fetch(
+            SCRIPT_URL + '?_=' + new Date().getTime()
+        );
+
+        const result = await response.json();
+
+        console.log('DATABASE:', result);
+
+        cloudData = {
+            laporanUtama : result.laporanUtama || [],
+            saldoLalu : result.saldoLalu || [],
+            pelunasan : result.pelunasan || [],
+            packing : result.packing || [],
+            noSurat : result.noSurat || []
+        };
+
+        populasiDropdownPelanggan();
+
+        renderTabel();
+
+        const toastElement = document.getElementById('dbToast');
+
+        if(toastElement){
+            const toast = new bootstrap.Toast(
+                toastElement,
+                { delay: 3000 }
+            );
+            toast.show();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            'Gagal memuat database.\n\n' +
+            'Pastikan deployment Apps Script terbaru masih aktif.'
+        );
+
+    }
+}
+
+    // MEMBUAT ID PELANGGAN UNIK BERDASARKAN SHEET DATA_TRANSAKSI
+    function populasiDropdownPelanggan() {
+        const selectElement = document.getElementById("selectIdPelanggan");
+        const databaseUtama = cloudData.laporanUtama || [];
+        
+        let semuaId = databaseUtama.map(row => (row.idPelanggan || "").trim().toUpperCase()).filter(id => id !== "");
+        let idUnik = [...new Set(semuaId)];
+        idUnik.sort();
+
+        selectElement.innerHTML = "";
+        
+        if(idUnik.length === 0) {
+            selectElement.innerHTML = `<option value="">Tidak ada ID ditemukan</option>`;
+            return;
+        }
+
+        idUnik.forEach(id => {
+            let selectedAttr = (id === "BANKBNI08863A") ? "selected" : "";
+            selectElement.insertAdjacentHTML('beforeend', `<option value="${id}" ${selectedAttr}>${id}</option>`);
+        });
+    }
+
+    // debug helper removed
+
+    function renderTabel() {
+        const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
+        const tahunDipilih = parseInt(document.getElementById("inputTahun").value);
+        const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
+        
+        document.getElementById("headerBulan").innerText = `${namaBulanIndo[bulanDipilih]} ${tahunDipilih}`;
+        document.getElementById("headerKode").innerText = targetIdPelanggan ? targetIdPelanggan : "-";
+        
+        const jumlahHari = new Date(tahunDipilih, bulanDipilih + 1, 0).getDate();
+        const tbody = document.getElementById("tabelBody");
+        tbody.innerHTML = ""; 
+
+        if(!targetIdPelanggan) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Silakan pilih ID Korporat terlebih dahulu</td></tr>`;
+            globalNamaKorporat = "-";
+            waSummary.saldoAkhirNum = 0;
+            updateSuratTagihan();
+            return;
+        }
+
+        let totalItemAkumulasi = 0;
+        let totalBiayaAkumulasi = 0;
+        let namaKorporatTerdeteksi = "";
+        const databaseUtama = cloudData.laporanUtama || [];
+        let keywordBulan = namaBulanEng[bulanDipilih]; 
+
+        for (let i = 1; i <= jumlahHari; i++) {
+            let tglDuaDigit = i < 10 ? '0' + i : i.toString();
+            let targetTeksTanggal = `${tglDuaDigit} ${keywordBulan} ${tahunDipilih}`; 
+
+            let kumpulanBarisCocok = databaseUtama.filter(row => {
+                if(!row.tglTrx || !row.idPelanggan) return false;
+                if(row.idPelanggan.trim().toUpperCase() !== targetIdPelanggan) return false;
+                
+const dbDate = parseTanggal(row.tglTrx);
+
+if(!dbDate) return false;
+
+return (
+    dbDate.getDate() === i &&
+    dbDate.getMonth() === bulanDipilih &&
+    dbDate.getFullYear() === tahunDipilih
+);
+
+            });
+
+            let subTotalTrxHariIni = 0;
+            let subTotalBiayaHariIni = 0;
+            let adaDataHariIni = false;
+
+            if (kumpulanBarisCocok.length > 0) {
+                adaDataHariIni = true;
+                kumpulanBarisCocok.forEach(baris => {
+                    let bersihTrx = angkaBersih(baris.trx);
+                    let bersihTotal = angkaBersih(baris.total);
+                    subTotalTrxHariIni += parseInt(bersihTrx) || 0;
+                    subTotalBiayaHariIni += parseInt(bersihTotal) || 0;
+                    if(baris.namaKorporat && !namaKorporatTerdeteksi) {
+                        namaKorporatTerdeteksi = baris.namaKorporat.replace(/_/g, " "); 
+                    }
+                });
+                totalItemAkumulasi += subTotalTrxHariIni;
+                totalBiayaAkumulasi += subTotalBiayaHariIni;
+            }
+
+            let displayTrx = adaDataHariIni ? subTotalTrxHariIni : "-";
+            let displayOngkir = adaDataHariIni ? subTotalBiayaHariIni.toLocaleString('en-US') : "-";
+
+            let rowHtml = `<tr>
+                <td class="text-center">${i}</td>
+                <td>${tglDuaDigit} ${keywordBulan} ${tahunDipilih}</td>
+                <td class="text-center">${displayTrx}</td>
+                <td>Rp <span class="float-end">${displayOngkir}</span></td>
+            </tr>`;
+            tbody.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        if (namaKorporatTerdeteksi) {
+            globalNamaKorporat = namaKorporatTerdeteksi.toUpperCase();
+            document.getElementById("headerNamaKorporat").innerText = globalNamaKorporat;
+        } else {
+            let alternatif = databaseUtama.find(row => (row.idPelanggan || "").trim().toUpperCase() === targetIdPelanggan);
+            globalNamaKorporat = alternatif && alternatif.namaKorporat ? alternatif.namaKorporat.replace(/_/g, " ").toUpperCase() : "BANK BNI CAB ENDE";
+            document.getElementById("headerNamaKorporat").innerText = globalNamaKorporat;
+        }
+
+        let txtTotalBiaya = totalBiayaAkumulasi > 0 ? totalBiayaAkumulasi.toLocaleString('en-US') : "0";
+        let txtTotalItem = totalItemAkumulasi > 0 ? totalItemAkumulasi : "0";
+
+        let totalRow = `<tr style="font-weight: bold;">
+            <td colspan="2" class="text-end">JUMLAH</td>
+            <td class="text-center">${txtTotalItem}</td>
+            <td>Rp <span class="float-end">${txtTotalBiaya}</span></td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', totalRow);
+
+        const arraySaldoLalu = Array.isArray(cloudData.saldoLalu) ? cloudData.saldoLalu : [];
+        const arrayPelunasan = Array.isArray(cloudData.pelunasan) ? cloudData.pelunasan : [];
+        const arrayPacking   = Array.isArray(cloudData.packing) ? cloudData.packing : [];
+        
+        let matchSaldo = arraySaldoLalu.find(row => (row.idPelanggan || "").trim().toUpperCase() === targetIdPelanggan);
+        let vSaldoLalu = matchSaldo ? parseInt(angkaBersih(matchSaldo.total)) || 0 : 0;
+
+        let vPelunasan = 0;
+        arrayPelunasan.forEach(row => {
+            let id = (row.idPelanggan || "").trim().toUpperCase();
+            const dbDate = parseTanggal(row.tglTrx);
+
+            if(!dbDate) return;
+
+            if(
+                id === targetIdPelanggan &&
+                dbDate.getMonth() === bulanDipilih &&
+                dbDate.getFullYear() === tahunDipilih
+            ) {
+                vPelunasan += parseInt(angkaBersih(row.total)) || 0;
+            }
+        });
+
+        let vPacking = 0;
+        arrayPacking.forEach(row => {
+            let id = (row.idPelanggan || "").trim().toUpperCase();
+            const dbDate = parseTanggal(row.tglTrx);
+
+            if(!dbDate) return;
+
+            if(
+                id === targetIdPelanggan &&
+                dbDate.getMonth() === bulanDipilih &&
+                dbDate.getFullYear() === tahunDipilih
+            ) {
+                vPacking += parseInt(angkaBersih(row.total)) || 0;
+            }
+        });
+        
+        let vSaldoAkhir = vSaldoLalu - vPelunasan + vPacking + totalBiayaAkumulasi;
+
+        document.getElementById("saldoLalu").innerText = vSaldoLalu > 0 ? vSaldoLalu.toLocaleString('en-US') : "-";
+        document.getElementById("pelunasanTagihan").innerText = vPelunasan > 0 ? vPelunasan.toLocaleString('en-US') : "-";
+        document.getElementById("biayaPacking").innerText = vPacking > 0 ? vPacking.toLocaleString('en-US') : "-";
+        document.getElementById("saldoPengiriman").innerText = totalBiayaAkumulasi > 0 ? totalBiayaAkumulasi.toLocaleString('en-US') : "-";
+        document.getElementById("saldoAkhir").innerText = vSaldoAkhir !== 0 ? vSaldoAkhir.toLocaleString('en-US') : "-";
+
+        invoiceSummary = {
+            jumlahUnit: Number(txtTotalItem) || 0,
+            tarifPerUnit: totalBiayaAkumulasi > 0 && Number(txtTotalItem) > 0 ? Math.round(totalBiayaAkumulasi / Number(txtTotalItem)) : 0,
+            subtotal: totalBiayaAkumulasi || 0,
+            diskon: 0,
+            denda: 0,
+            pajak: Math.round((totalBiayaAkumulasi || 0) * 0.11),
+            total: totalBiayaAkumulasi + Math.round((totalBiayaAkumulasi || 0) * 0.11)
+        };
+
+        waSummary.totalItem = txtTotalItem;
+        waSummary.totalBiayaNum = totalBiayaAkumulasi;
+        waSummary.biayaPackingNum = vPacking;
+        waSummary.saldoAkhirNum = vSaldoAkhir;
+        updateSuratTagihan();
+        updateInvoicePage();
+        try { populateAdditionalTable(); } catch(e) { console.warn('populateAdditionalTable failed', e); }
+    }
+
+    function cetakKePdf(printTarget = 'both') {
+        const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
+        const tahunDipilih = parseInt(document.getElementById("inputTahun").value);
+        const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
+        let mmStr = (bulanDipilih + 1) < 10 ? '0' + (bulanDipilih + 1) : (bulanDipilih + 1);
+        const judulAsli = document.title;
+        const suffix = printTarget === "page2" ? "Invoice" : (printTarget === "page1" ? "Laporan" : "Laporan_Surat_dan_Pendapatan");
+        document.title = `${mmStr}_${tahunDipilih}_${targetIdPelanggan}_${globalNamaKorporat}_${suffix}`;
+        document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
+        if (printTarget === "page1") document.body.classList.add("print-page-1");
+        if (printTarget === "page2") document.body.classList.add("print-page-2");
+        window.print();
+        setTimeout(() => {
+            document.title = judulAsli;
+            document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
+        }, 1000);
+    }
+
+    function refreshData() {
+        ambilDataDariSheets();
+        showToast('Data berhasil diperbarui tanpa logout.', 'success');
+    }
+
+    function bukaSpreadsheet() {
+        if (currentRole !== USER_ROLES.SUPERUSER) {
+            alert('Hanya superuser yang dapat membuka database.');
+            return;
+        }
+        window.open(SPREADSHEET_URL, '_blank');
+    }
+
+    function kirimKeWhatsApp() {
+        const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
+        const tahunDipilih = document.getElementById("inputTahun").value;
+        const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
+        
+        if (!targetIdPelanggan) { alert("Silakan pilih ID Korporat."); return; }
+
+        let totalTagihanBulanIni = waSummary.totalBiayaNum + waSummary.biayaPackingNum;
+        let displayBiayaKirim = waSummary.totalBiayaNum > 0 ? waSummary.totalBiayaNum.toLocaleString('en-US') : "0";
+        let displayBiayaPacking = waSummary.biayaPackingNum > 0 ? waSummary.biayaPackingNum.toLocaleString('en-US') : "0";
+        let displayTotalTagihan = totalTagihanBulanIni > 0 ? totalTagihanBulanIni.toLocaleString('en-US') : "0";
+
+        // find PIC numbers from No_surat sheet (cloudData.noSurat)
+        const noSurat = cariNoSurat(targetIdPelanggan) || {};
+        const pic1Raw = ambilFieldNoSurat(noSurat, ["pic_1","pic1","pic 1","pic-1","pic1_no","pic_1_no"]);
+        const pic2Raw = ambilFieldNoSurat(noSurat, ["pic_2","pic2","pic 2","pic-2","pic2_no","pic_2_no"]);
+
+        function normalizePhone(phone){
+            if(!phone) return null;
+            const raw = phone.toString().trim();
+            if(!raw) return null;
+
+            // try to find a +... or digit sequence that looks like a phone number
+            const plusMatch = raw.match(/\+?\d[\d\s\-()]{6,}\d/);
+            const digitsMatch = raw.match(/\d{8,}/);
+            let candidate = plusMatch ? plusMatch[0] : (digitsMatch ? digitsMatch[0] : null);
+            if(!candidate) return null;
+
+            // remove non-digit characters, keep leading + if present
+            candidate = candidate.replace(/[()\s\-]/g, '');
+            if(candidate.startsWith('+')) candidate = candidate.substring(1);
+            // convert leading 0 to country code 62
+            if(candidate.startsWith('0')) candidate = '62' + candidate.substring(1);
+            // ensure only digits remain
+            candidate = candidate.replace(/[^\d]/g, '');
+            if(!candidate) return null;
+            return candidate;
+        }
+
+        const pic1 = normalizePhone(pic1Raw === '-' ? '' : pic1Raw);
+        const pic2 = normalizePhone(pic2Raw === '-' ? '' : pic2Raw);
+
+       const teksPesan = `Halo, kami dari *PT. POS INDONESIA (Persero)* \n` +
+                  `*Kantor Pos Ende 86300*.\n\n` +
+                  `*Nama Pelanggan:* ${globalNamaKorporat}\n` +
+                  `*ID Pelanggan :* ${targetIdPelanggan}\n\n` +
+                  `Berikut rincian tagihan pengiriman Anda:\n` +
+                  `Periode : ${namaBulanIndo[bulanDipilih]} ${tahunDipilih}\n` +
+                  `Total Kiriman : ${waSummary.totalItem} item\n` +
+                  `Biaya Kirim : Rp ${displayBiayaKirim}\n` +
+                  `Biaya Packing : Rp ${displayBiayaPacking}\n` +
+                  `*Total Tagihan Bulan ini : Rp ${displayTotalTagihan}*\n\n` +
+                  `Mohon untuk segera melakukan pembayaran ke rekening :\n` +
+                  `*BRI* : No Rek: 0024-01-001238-30-3 an. POS INDONESIA\n` +
+                  `*BRIVA* : 1394908130000 an. P088630000 ENDE\n` +
+                  `*BNI* :  54731889 an. DIVRE 8 KP ENDE\n` +
+                  `*MANDIRI* : 161-0000-86300-6 an. POS INDONESIA\n\n` +
+                  `Bukti transfer harap dikirimkan kembali melalui nomor WhatsApp ini atau ke PIC an. *Edison Leonard*, Whatsapp: *081339221840.*\n\n` +
+                  `*Catatan:*\n` +
+                  `a. Denda sebesar 1% (satu perseratus) dari invoice (tagihan) jika dilakukan pembayaran setelah 21 (dua puluh satu) hari sampai dengan 25 (dua puluh lima) hari setelah invoice (tagihan) diterima atau denda sebesar 2% (dua perseratus) dari invoice (tagihan) jika dilakukan pembayaran setelah 26 (dua puluh enam) hari sampai dengan 30 (tiga puluh) hari setelah invoice (tagihan) diterima.\n` +
+                  `b. Apabila tidak melunasi invoice (tagihan) sampai dengan 1 bulan sejak tanggal jatuh tempo tagihan maka mulai keesokan harinya pembayaran atas kiriman dilakukan secara tunai.\n` +
+                  `c. Apabila tidak bersedia secara tunai maka Kami berhak menolak dan menghentikan layanan pengiriman ini.\n\n` +
+                  `Terima kasih.`;
+
+        // prefer PIC1, fallback PIC2, otherwise open generic chat
+        try {
+            const waUrlPic1 = pic1 ? `https://api.whatsapp.com/send?phone=${pic1}&text=${encodeURIComponent(teksPesan)}` : null;
+            const waUrlPic2 = pic2 ? `https://api.whatsapp.com/send?phone=${pic2}&text=${encodeURIComponent(teksPesan)}` : null;
+            console.log('kirimKeWhatsApp -> waUrlPic1, waUrlPic2:', waUrlPic1, waUrlPic2);
+
+            if (waUrlPic1) {
+                const win = window.open(waUrlPic1, '_blank');
+                if (!win) {
+                    showToast('Popup diblokir. Klik tombol WA untuk membuka link.', 'warning');
+                    console.log('Popup blocked for waUrlPic1:', waUrlPic1);
+                }
+                return;
+            }
+            if (waUrlPic2) {
+                const win2 = window.open(waUrlPic2, '_blank');
+                if (!win2) {
+                    showToast('Popup diblokir. Klik tombol WA untuk membuka link.', 'warning');
+                    console.log('Popup blocked for waUrlPic2:', waUrlPic2);
+                }
+                return;
+            }
+
+            // fallback: open generic chat with message only
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(teksPesan)}`;
+            const win3 = window.open(waUrl, '_blank');
+            if (!win3) {
+                showToast('Popup diblokir. Klik tombol WA untuk membuka link.', 'warning');
+                console.log('Popup blocked for fallback waUrl:', waUrl);
+            }
+        } catch (e) {
+            console.error('kirimKeWhatsApp error opening WhatsApp URL', e);
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(teksPesan)}`;
+            window.open(waUrl, '_blank');
+        }
+    }
+
+    
+function updateProgress(val){
+    const pb = document.getElementById('uploadProgress');
+    pb.style.width = val + '%';
+    pb.innerText = val + '%';
+}
+
+function generateHash(obj){
+    return [
+        obj.idPelanggan,
+        obj.namaKorporat,
+        obj.tglTrx,
+        obj.trx,
+        obj.total
+    ].join('|');
+}
+
+function detectDelimiter(line){
+    let commaCount = 0;
+    let semicolonCount = 0;
+    let inQuotes = false;
+
+    for(let i = 0; i < line.length; i++){
+        const char = line[i];
+        const next = line[i + 1];
+
+        if(char === '"' && inQuotes && next === '"'){
+            i++;
+        }else if(char === '"'){
+            inQuotes = !inQuotes;
+        }else if(!inQuotes && char === ','){
+            commaCount++;
+        }else if(!inQuotes && char === ';'){
+            semicolonCount++;
+        }
+    }
+
+    return semicolonCount > commaCount ? ';' : ',';
+}
+
+function parseCSVLine(line, delimiter){
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for(let i = 0; i < line.length; i++){
+        const char = line[i];
+        const next = line[i + 1];
+
+        if(char === '"' && inQuotes && next === '"'){
+            current += '"';
+            i++;
+        }else if(char === '"'){
+            inQuotes = !inQuotes;
+        }else if(char === delimiter && !inQuotes){
+            result.push(current);
+            current = '';
+        }else{
+            current += char;
+        }
+    }
+
+    result.push(current);
+    return result;
+}
+
+async function uploadCSVFiles(files){
+
+    if(!files || files.length === 0) return;
+
+    let merged = [];
+    let duplicate = 0;
+
+    updateProgress(0);
+
+    for(let i=0;i<files.length;i++){
+
+        const file = files[i];
+
+        const tgl = file.name.replace(/\.csv$/i,'').trim();
+
+        const text = await file.text();
+
+        const rows = text.split('\n')
+            .map(r=>r.trim())
+            .filter(r=>r!=='');
+        const delimiter = rows.length ? detectDelimiter(rows[0]) : ',';
+
+        rows.forEach(line=>{
+
+            const c = parseCSVLine(line, delimiter).map(value => value.trim());
+
+            if(c.length < 4) return;
+            const firstCol = (c[0] || '').toLowerCase();
+            const secondCol = (c[1] || '').toLowerCase();
+            if(firstCol.includes('nama') && secondCol.includes('id')) return;
+            if(firstCol.includes('id') && secondCol.includes('nama')) return;
+
+            const formatNamaId = c.length >= 7 && !terlihatSepertiIdKorporat(c[0]) && terlihatSepertiIdKorporat(c[1]);
+            const formatIdNama = c.length >= 7 && terlihatSepertiIdKorporat(c[0]) && !terlihatSepertiIdKorporat(c[1]);
+
+            const obj = formatNamaId ? {
+                namaKorporat:(c[0]||'').trim(),
+                idPelanggan:(c[1]||'').trim().toUpperCase(),
+                jenisProduk:(c[2]||'').trim(),
+                trx:(c[3]||'0').trim(),
+                ongkir:(c[4]||'0').trim(),
+                ppn:(c[5]||'0').trim(),
+                total:(c[6]||'0').trim(),
+                tglTrx:(c[7]||tgl).trim()
+            } : formatIdNama ? {
+                idPelanggan:(c[0]||'').trim().toUpperCase(),
+                namaKorporat:(c[1]||'').trim(),
+                jenisProduk:(c[2]||'').trim(),
+                trx:(c[3]||'0').trim(),
+                ongkir:(c[4]||'0').trim(),
+                ppn:(c[5]||'0').trim(),
+                total:(c[6]||'0').trim(),
+                tglTrx:(c[7]||tgl).trim()
+            } : {
+                idPelanggan:(c[0]||'').trim().toUpperCase(),
+                namaKorporat:(c[1]||'').trim(),
+                trx:(c[2]||'0').trim(),
+                total:(c[3]||'0').trim(),
+                tglTrx:tgl
+            };
+
+            const key = generateHash(obj);
+
+            if(merged.some(x=>generateHash(x)===key)){
+                duplicate++;
+            }else{
+                merged.push(obj);
+            }
+
+        });
+
+        const percent = Math.round(((i+1)/files.length)*100);
+        updateProgress(percent);
+    }
+
+    try{
+
+        const response = await fetch(SCRIPT_URL,{
+            method:'POST',
+            body:JSON.stringify({
+                action:'uploadCSV',
+                data:merged
+            })
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+
+            alert(
+                `Upload berhasil\n` +
+                `Data baru: ${result.inserted}\n` +
+                `Duplicate lokal: ${duplicate}\n` +
+                `Duplicate backend: ${result.duplicate}`
+            );
+
+            await ambilDataDariSheets();
+
+        }else{
+
+            alert('Upload gagal');
+
+        }
+
+    }catch(err){
+
+        console.error(err);
+        alert('Upload error');
+
+    }
+
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+
+    const input = document.getElementById('csvInput');
+
+    input.addEventListener('change',e=>{
+        uploadCSVFiles(e.target.files);
+    });
+
+});
+
+
+window.onload = () => {
+    showLoginOverlay();
+    const usernameInput = document.getElementById('loginUsername');
+    if (usernameInput) usernameInput.focus();
+
+    const taxInput = document.getElementById('invoiceTaxRate');
+    const discountInput = document.getElementById('invoiceDiscount');
+    const dendaRateInput = document.getElementById('invoiceDendaRate');
+    const dueDateInput = document.getElementById('invoiceJatuhTempo');
+    const invoiceDateInput = document.getElementById('invoiceTanggal');
+
+    if (discountInput) {
+        discountInput.addEventListener('input', () => formatDiscountInput(discountInput));
+    }
+
+    [taxInput, discountInput, dendaRateInput, dueDateInput, invoiceDateInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', updateInvoicePage);
+            input.addEventListener('change', updateInvoicePage);
+        }
+    });
+
+    // default page (preview)
+    setActivePage(1);
+};
+
+function setActivePage(pageNumber){
+    const pages = document.querySelectorAll('.page-section');
+    pages.forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+    });
+
+    const target = document.querySelector(`.page-section.page-${pageNumber}`);
+    if(target){
+        target.classList.add('active');
+        target.style.display = 'block';
+    }
+
+    const b1 = document.getElementById('btnPage1');
+    if(b1) b1.classList.toggle('active', pageNumber === 1);
+    const b2 = document.getElementById('btnPage2');
+    if(b2) b2.classList.toggle('active', pageNumber === 2);
+}
+</script>
+</body>
+</html>
