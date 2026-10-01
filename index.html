@@ -556,17 +556,19 @@
         .invoice-reference-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 12px 0 52px; }
         .invoice-reference-recipient { line-height: 1.55; }
         .invoice-reference-recipient div:first-child { margin-bottom: 6px; }
+        #invoiceNamaPelanggan,
+        #invoiceKodePelanggan { font-weight: 700; }
         .invoice-reference-details { display: grid; grid-template-columns: 104px 14px 1fr; line-height: 1.55; }
         .invoice-reference-details strong { font-size: 14px; }
         .invoice-reference-intro { margin-bottom: 12px; }
         .invoice-reference-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #111; margin: 0 0 22px; }
         .invoice-reference-table th, .invoice-reference-table td { border: 1px solid #111; padding: 4px 6px; height: 19px; vertical-align: middle; }
         .invoice-reference-table th { background: #fffdbd; text-align: center; font-weight: 400; }
-        .invoice-reference-table th:nth-child(1) { width: 58px; }
-        .invoice-reference-table th:nth-child(2) { width: 250px; }
-        .invoice-reference-table th:nth-child(3) { width: 76px; }
-        .invoice-reference-table th:nth-child(4) { width: 112px; }
-        .invoice-reference-table th:nth-child(5) { width: 136px; }
+        .invoice-reference-table th:nth-child(1) { width: 6%; }
+        .invoice-reference-table th:nth-child(2) { width: 40%; }
+        .invoice-reference-table th:nth-child(3) { width: 12%; }
+        .invoice-reference-table th:nth-child(4) { width: 20%; }
+        .invoice-reference-table th:nth-child(5) { width: 22%; }
         .invoice-reference-table td:nth-child(1), .invoice-reference-table td:nth-child(3), .invoice-reference-table td:nth-child(4) { text-align: center; }
         .invoice-reference-table td:last-child { text-align: right; }
         .invoice-reference-table .invoice-highlight td { font-weight: 700; }
@@ -574,9 +576,11 @@
         .invoice-reference-signature { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin-top: 8px; }
         .invoice-reference-sign-space { height: 58px; }
         .invoice-reference-signature strong { text-decoration: underline; }
-        .invoice-reference-bottom-notes { margin: 36px -28px 0; border-top: 1px solid #111; text-align: center; line-height: 1.35; }
-        .invoice-reference-bottom-notes div { padding: 10px 24px; }
-        .invoice-reference-bottom-notes div + div { border-top: 1px solid #111; }
+        .invoice-reference-bottom-notes { margin: 18px 0 0; padding: 12px 18px; border: 1px solid #111; text-align: left; line-height: 1.35; }
+        .invoice-reference-bottom-notes-title { margin-bottom: 12px; font-weight: 700; font-style: italic; text-decoration: underline; }
+        .invoice-reference-bottom-notes ul { margin: 0; padding: 0; list-style: none; }
+        .invoice-reference-bottom-notes li { position: relative; margin: 0 0 4px; padding-left: 18px; }
+        .invoice-reference-bottom-notes li::before { position: absolute; left: 0; content: "-"; }
 
         @media print {
             .invoice-page {
@@ -612,13 +616,28 @@
             .invoice-company {
                 font-size: 11pt !important;
             }
-            .invoice-reference-page { width: 100% !important; min-height: 277mm; margin: 0 !important; padding: 3mm 7mm 0 !important; border: 1px solid #111 !important; box-shadow: none !important; font-size: 9pt; }
+            .invoice-reference-page { display: flex; flex-direction: column; justify-content: flex-start; width: 100% !important; min-height: 351mm; margin: 0 !important; padding: 5mm 7mm !important; border: 1px solid #111 !important; box-shadow: none !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 11.5pt; line-height: 1.35; zoom: 0.8; break-inside: avoid-page !important; page-break-inside: avoid !important; }
             .invoice-reference-form select { appearance: none; -webkit-appearance: none; border: 0; padding: 0; background: transparent; color: inherit; }
-            .invoice-reference-page .invoice-reference-meta { margin-bottom: 38px; }
-            .invoice-reference-page .invoice-reference-table { margin-bottom: 18px; }
-            .invoice-reference-page .invoice-reference-bottom-notes { margin-left: -7mm; margin-right: -7mm; }
+            .invoice-reference-page .invoice-reference-meta { margin: 4mm 0 8mm; }
+            .invoice-reference-page .invoice-reference-company div:first-child { font-size: 14pt; }
+            .invoice-reference-page .invoice-reference-table { margin-bottom: 4mm; }
+            .invoice-reference-page .invoice-reference-table th,
+            .invoice-reference-page .invoice-reference-table td { height: 6mm; padding: 1mm 1.5mm; font-size: 10pt; line-height: 1.1; }
+            .invoice-reference-page .invoice-reference-table th { text-transform: uppercase; font-weight: 700; }
+            .invoice-reference-page .invoice-reference-table tbody td:nth-child(2) { text-transform: uppercase; }
+            .invoice-reference-page .invoice-reference-footer-note { margin-bottom: 4mm; line-height: 1.35; }
+            .invoice-reference-page .invoice-reference-signature { margin-top: 2mm; }
+            .invoice-reference-page .invoice-reference-sign-space { height: 16mm; }
+            .invoice-reference-page .invoice-reference-bottom-notes { margin: 2mm 0 0; padding: 3mm 4mm; line-height: 1.2; font-size: 8.5pt; }
+            .invoice-reference-page .invoice-reference-bottom-notes-title { margin-bottom: 2mm; }
+            .invoice-reference-page .invoice-reference-bottom-notes li { margin-bottom: 1mm; }
             body.print-page-2 .page-section.page-1 { display: none !important; }
-            body.print-page-2 .page-section.page-2 { display: block !important; page-break-before: auto; }
+            body.print-page-2 .page-section.page-2 { display: block !important; page-break-before: auto; break-inside: avoid-page !important; page-break-inside: avoid !important; }
+            body.print-both .page-section { display: none !important; }
+            body.print-both .page-section.page-1,
+            body.print-both .page-section.page-2 { display: block !important; }
+            body.print-both .page-section.page-1 { break-after: page !important; page-break-after: always !important; }
+            body.print-both .page-section.page-2 { break-before: page !important; page-break-before: always !important; }
         }
         /* debug-panel removed */
 
@@ -1161,7 +1180,7 @@
         </div>
         <div class="invoice-reference-header">
             <img class="invoice-reference-logo" src="https://lh3.googleusercontent.com/d/1ZxgZGywNjf2vICtCMUE7KYFPS9ltALwL" alt="POS IND">
-            <div class="invoice-reference-form">Form Piutang-2 Cetakan ke : <select id="invoiceCopyNumber" aria-label="Nomor cetakan invoice"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option></select></div>
+            <div class="invoice-reference-form">Form Piutang-2 Cetakan ke : <select id="invoiceCopyNumber" aria-label="Nomor cetakan invoice" onchange="updateInvoicePage()"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
             <div class="invoice-reference-company">
                 <div>PT POS INDONESIA (PERSERO)</div>
                 <div>NPWP : 01.001.620.2-093-000</div>
@@ -1176,6 +1195,7 @@
                 <div>Pelanggan Yth.</div>
                 <div>Bpk / Ibu Pimpinan</div>
                 <div id="invoiceNamaPelanggan">-</div>
+                <div>(<span id="invoiceKodePelanggan">-</span>)</div>
             </div>
             <div class="invoice-reference-details">
                 <strong>INVOICE</strong><span></span><span></span>
@@ -1206,26 +1226,31 @@
                 <tr><td></td><td>PPN HTNB</td><td></td><td></td><td>0</td></tr>
                 <tr class="invoice-highlight"><td></td><td>TOTAL PIUTANG NETTING</td><td></td><td></td><td id="invoiceNetting">0</td></tr>
                 <tr><td></td><td>PPH 23 BUPOT ( 2% dr ONGKIR NETTING)</td><td></td><td></td><td id="invoicePph23">0</td></tr>
-                <tr class="invoice-highlight"><td></td><td>TOTAL YANG HARUS DITFR MITRA</td><td></td><td></td><td id="invoiceTotal">0</td></tr>
+                <tr><td></td><td>BIAYA PACKING</td><td></td><td></td><td id="invoicePacking">0</td></tr>
+                <tr><td></td><td>DENDA KETERLAMBATAN PELUNASAN<span id="invoiceLatePenaltyLabel"></span></td><td></td><td></td><td id="invoiceLatePenalty">0</td></tr>
+                <tr class="invoice-highlight"><td></td><td>TOTAL YANG HARUS DITRANSFER MITRA</td><td></td><td></td><td id="invoiceTotal">0</td></tr>
             </tbody>
         </table>
 
         <div class="invoice-reference-footer-note">
-            <div>Besarnya biaya tagihan tersebut mohon ditransfer ke rekening sbb :</div>
-            <div>BRI : 0024-01-001238-30-3 a/n POS INDONESIA</div>
-            <div>BRIVA : 1394908130000 a/n P088630000 ENDE</div>
-            <div>BNI : 54731889 a/n DIVRE 8 KP ENDE</div>
-            <div>VA BNI : 9885614886300813 a/n 86300 ENDE</div>
-            <div>MANDIRI : 161-0000-86300-6 a/n POS INDONESIA</div>
-            <div>mohon konfirmasi ke no hp 081339221840 an. Edison Leonard dengan melampirkan<br>foto bukti transfer yang bertalian.</div>
+            <div>Besarnya biaya tagihan tersebut mohon ditransfer ke rekening sebagai berikut:</div>
+            <div>- BRI : 0024-01-001238-30-3 a/n POS INDONESIA</div>
+            <div>- BRIVA : 1394908130000 a/n P088630000 ENDE</div>
+            <div>- BNI : 54731889 a/n DIVRE 8 KP ENDE</div>
+            <div>- VA BNI : 9885614886300813 a/n 86300 ENDE</div>
+            <div>- MANDIRI : 161-0000-86300-6 a/n POS INDONESIA</div>
+            <div>Mohon konfirmasi ke no <strong>WA: 081339221840</strong> an. <strong>Edison Leonard</strong> dengan melampirkan foto bukti transfer yang bertalian.</div>
         </div>
         <div class="invoice-reference-signature">
-            <div><div>Mengetahui,</div><div>Kepala Kantor Pos,</div><div class="invoice-reference-sign-space"></div><strong>HANNAN</strong><div>Nippos: 983390370</div></div>
-            <div><div id="invoiceReferenceDate">Ende, -</div><div>Manajer KeuanFBPgan,</div><div class="invoice-reference-sign-space"></div><strong>MARIA PRATIWI LAKA</strong><div>Nippos: 987413417</div></div>
+            <div><div>Mengetahui,</div><div>Executive Manager,</div><div class="invoice-reference-sign-space"></div><strong>HANNAN</strong><div>Nippos: 983390370</div></div>
+            <div><div id="invoiceReferenceDate">Ende, -</div><div>Spv. Admin&Kug,</div><div class="invoice-reference-sign-space"></div><strong>MARIA PRATIWI LAKA</strong><div>Nippos: 987413417</div></div>
         </div>
         <div class="invoice-reference-bottom-notes">
-            <div>Catatan : Nilai tagihan di atas dapat berubah sesuai dengan kesepakatan dalam masalah perpajakan dengan<br>pelanggan yang menjadi Wajib Pungut.</div>
-            <div>tanggal 15 akan dikenakan denda sebesar 1 % dan melewati tanggal 26 maka akan dikenakan denda sebesar<br>2% , dan jika melewati 1 (satu) bulan transaksi akan dikenakan 2% dari akumulasi tagihan plus denda</div>
+            <div class="invoice-reference-bottom-notes-title">Catatan :</div>
+            <ul>
+                <li>Nilai tagihan di atas dapat berubah sesuai dengan kesepakatan dalam masalah perpajakan dengan pelanggan yang menjadi Wajib Pungut.</li>
+                <li>Tanggal 15 akan dikenakan denda sebesar 1% dan melewati tanggal 26 akan dikenakan denda sebesar 2%. Jika melewati 1 (satu) bulan transaksi, akan dikenakan 2% dari akumulasi tagihan plus denda.</li>
+            </ul>
         </div>
     </div>
 </div>
@@ -1757,7 +1782,25 @@
             "LNKPPN08863A"
         ].includes(targetIdPelanggan);
         const nilaiPph23 = pelangganPph23Dikecualikan ? 0 : Math.round(totalNetting * 0.02);
-        const total = Math.max(0, totalNetting - nilaiPph23);
+        const biayaPacking = waSummary.biayaPackingNum || 0;
+        const nomorCetakan = parseInt(document.getElementById("invoiceCopyNumber").value, 10) || 1;
+        const dasarDenda = Math.max(0, totalNetting - nilaiPph23);
+        const dendaCetakanKetiga = Math.round(dasarDenda * 0.02);
+        const labelDenda = nomorCetakan === 2
+            ? " (1%)"
+            : nomorCetakan === 3
+                ? " (2%)"
+                : nomorCetakan >= 4
+                    ? " (2% dari akumulasi tagihan plus denda)"
+                    : "";
+        const dendaKeterlambatan = nomorCetakan === 2
+            ? Math.round(dasarDenda * 0.01)
+            : nomorCetakan === 3
+                ? dendaCetakanKetiga
+                : nomorCetakan >= 4
+                    ? Math.round((dasarDenda + dendaCetakanKetiga) * 0.02)
+                    : 0;
+        const total = Math.max(0, totalNetting - nilaiPph23 + biayaPacking + dendaKeterlambatan);
         const unit = invoiceSummary.jumlahUnit || 0;
         const tarif = invoiceSummary.tarifPerUnit || 0;
 
@@ -1779,6 +1822,7 @@
             rekeningEl.innerHTML = rekeningList.map((item) => `<div>${item}</div>`).join('');
         }
         document.getElementById("invoiceNamaPelanggan").innerText = namaPelanggan;
+        document.getElementById("invoiceKodePelanggan").innerText = targetIdPelanggan || "-";
         document.getElementById("invoiceIdPelanggan").innerText = ambilFieldNoSurat(noSurat, ["No_pks_korporat", "no_pks_korporat"]) || targetIdPelanggan || "-";
         document.getElementById("invoiceNpwp").innerText = npwp;
         const selectedPeriodText = `${namaBulanIndo[bulanDipilih]} ${tahunDipilih}`;
@@ -1797,6 +1841,9 @@
         document.getElementById("invoicePajak").innerText = formatRupiah(pajak);
         document.getElementById("invoiceNetting").innerText = formatRupiah(totalNetting);
         document.getElementById("invoicePph23").innerText = formatRupiah(nilaiPph23);
+        document.getElementById("invoicePacking").innerText = formatRupiah(biayaPacking);
+        document.getElementById("invoiceLatePenaltyLabel").innerText = labelDenda;
+        document.getElementById("invoiceLatePenalty").innerText = formatRupiah(dendaKeterlambatan);
         document.getElementById("invoiceTotal").innerText = formatRupiah(total);
         invoiceSummary.total = total;
         document.getElementById("suratSaldoAkhir").innerText = formatRupiah(total);
@@ -2041,15 +2088,18 @@ return (
         const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
         let mmStr = (bulanDipilih + 1) < 10 ? '0' + (bulanDipilih + 1) : (bulanDipilih + 1);
         const judulAsli = document.title;
-        const suffix = printTarget === "page2" ? "Invoice" : (printTarget === "page1" ? "Laporan" : "Laporan_Surat_dan_Pendapatan");
+        const suffix = printTarget === "page2" ? "Invoice" : (printTarget === "page1" ? "Laporan" : "Rekap_dan_Invoice");
         document.title = `${mmStr}_${tahunDipilih}_${targetIdPelanggan}_${globalNamaKorporat}_${suffix}`;
         document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
+        document.body.classList.remove("print-both");
         if (printTarget === "page1") document.body.classList.add("print-page-1");
         if (printTarget === "page2") document.body.classList.add("print-page-2");
+        if (printTarget === "both") document.body.classList.add("print-both");
         window.print();
         setTimeout(() => {
             document.title = judulAsli;
             document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
+            document.body.classList.remove("print-both");
         }, 1000);
     }
 
