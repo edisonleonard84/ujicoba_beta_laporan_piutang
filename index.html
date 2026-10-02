@@ -1831,8 +1831,8 @@
         document.getElementById("invoicePeriod").innerText = selectedPeriodText;
         document.getElementById("invoicePeriodTable").innerText = selectedPeriodText;
         document.getElementById("invoiceUnit").innerText = unit.toLocaleString('en-US');
-        document.getElementById("invoiceJumlah").innerText = `Rp ${formatRupiah(subtotal)}`;
-        document.getElementById("invoiceTerbilang").innerText = terbilangRupiah(subtotal);
+        document.getElementById("invoiceJumlah").innerText = `Rp ${formatRupiah(total)}`;
+        document.getElementById("invoiceTerbilang").innerText = terbilangRupiah(total);
         document.getElementById("invoiceSubtotal").innerText = formatRupiah(subtotal);
         document.getElementById("invoiceBruto").innerText = formatRupiah(subtotal + pajak);
         document.getElementById("invoiceDiskon").innerText = formatRupiah(diskon);
