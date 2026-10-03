@@ -1243,12 +1243,12 @@
         </div>
         <div class="invoice-reference-signature">
             <div><div>Mengetahui,</div><div>Executive Manager,</div><div class="invoice-reference-sign-space"></div><strong>HANNAN</strong><div>Nippos: 983390370</div></div>
-            <div><div id="invoiceReferenceDate">Ende, -</div><div>Spv. Admin&Kug,</div><div class="invoice-reference-sign-space"></div><strong>MARIA PRATIWI LAKA</strong><div>Nippos: 987413417</div></div>
+            <div><div id="invoiceReferenceDate">Ende, -</div><div>Spv. Adminkug dan Dukum</div><div class="invoice-reference-sign-space"></div><strong>MARIA PRATIWI LAKA</strong><div>Nippos: 987413417</div></div>
         </div>
         <div class="invoice-reference-bottom-notes">
             <div class="invoice-reference-bottom-notes-title">Catatan :</div>
             <ul>
-                <li>Nilai tagihan di atas dapat berubah sesuai dengan kesepakatan dalam masalah perpajakan dengan pelanggan yang menjadi Wajib Pungut.</li>
+                <li>Nilai Tagihan di atas dapat berubah sesuai dengan kesepakatan dalam masalah perpajakan dengan pelanggan yang menjadi Wajib Pungut.</li>
                 <li>Tanggal 15 akan dikenakan denda sebesar 1% dan melewati tanggal 26 akan dikenakan denda sebesar 2%. Jika melewati 1 (satu) bulan transaksi, akan dikenakan 2% dari akumulasi tagihan plus denda.</li>
             </ul>
         </div>
@@ -1773,7 +1773,6 @@
         const totalNetting = Math.max(0, subtotal - diskon + denda);
         const pelangganPph23Dikecualikan = [
             "BANKBNI08863A",
-            "BANKBRI",
             "BANKBRI08863A",
             "LNPNENDE08863A",
             "LNKARANTIN08863A",
@@ -1785,7 +1784,7 @@
         const nilaiPph23 = pelangganPph23Dikecualikan ? 0 : Math.round(totalNetting * 0.02);
         const biayaPacking = waSummary.biayaPackingNum || 0;
         const nomorCetakan = parseInt(document.getElementById("invoiceCopyNumber").value, 10) || 1;
-        const dasarDenda = Math.max(0, totalNetting - nilaiPph23);
+        const dasarDenda = Math.max(0, subtotal);
         const dendaCetakanKetiga = Math.round(dasarDenda * 0.02);
         const labelDenda = nomorCetakan === 2
             ? " (1%)"
@@ -1812,11 +1811,11 @@
         }
         document.getElementById("invoiceNomorPengantar").innerText = nomorSurat;
         const rekeningList = [
-            "BRI : 0024-01-001238-30-3 a/n POS INDONESIA",
-            "BRIVA : 1394908130000 a/n P088630000 ENDE",
-            "BNI : 54731889 a/n DIVRE 8 KP ENDE",
-            "VA BNI : 9885614886300813 a/n 86300 ENDE",
-            "MANDIRI : 161-0000-86300-6 a/n POS INDONESIA"
+            "BRI : 0024-01-001238-30-3 an. POS INDONESIA",
+            "BRIVA : 1394908130000 an. P088630000 ENDE",
+            "BNI : 54731889 an. DIVRE 8 KP ENDE",
+            "VA BNI : 9885614886300813 an. 86300 ENDE",
+            "MANDIRI : 161-0000-86300-6 an. POS INDONESIA"
         ];
         const rekeningEl = document.getElementById("invoiceRekening");
         if (rekeningEl) {
