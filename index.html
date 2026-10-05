@@ -1785,7 +1785,7 @@
         const biayaPacking = waSummary.biayaPackingNum || 0;
         const nomorCetakan = parseInt(document.getElementById("invoiceCopyNumber").value, 10) || 1;
         const dasarDenda = Math.max(0, subtotal);
-        const dasarAkumulasiTagihan = Math.max(0, totalNetting - nilaiPph23 + biayaPacking);
+        const dasarTagihanTransfer = Math.max(0, totalNetting - nilaiPph23 + biayaPacking);
         const dendaCetakanKetiga = Math.round(dasarDenda * 0.02);
         const labelDenda = nomorCetakan === 2
             ? " (1%)"
@@ -1799,9 +1799,10 @@
             : nomorCetakan === 3
                 ? dendaCetakanKetiga
                 : nomorCetakan >= 4
-                    ? Math.round(dasarAkumulasiTagihan * 0.02)
+                    ? Math.round((dasarTagihanTransfer + dendaCetakanKetiga) * 0.02)
                     : 0;
-        const total = Math.max(0, totalNetting - nilaiPph23 + biayaPacking + dendaKeterlambatan);
+        const dendaCetakanSebelumnya = nomorCetakan >= 4 ? dendaCetakanKetiga : 0;
+        const total = Math.max(0, dasarTagihanTransfer + dendaCetakanSebelumnya + dendaKeterlambatan);
         const unit = invoiceSummary.jumlahUnit || 0;
         const tarif = invoiceSummary.tarifPerUnit || 0;
 
