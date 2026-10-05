@@ -2124,10 +2124,15 @@ return (
         
         if (!targetIdPelanggan) { alert("Silakan pilih ID Korporat."); return; }
 
-        let totalTagihanBulanIni = waSummary.totalBiayaNum + waSummary.biayaPackingNum;
+        updateInvoicePage();
+        const totalTagihanBulanIni = parseInt((document.getElementById("invoiceTotal")?.innerText || "0").replace(/\D/g, ""), 10) || 0;
+        const dendaKeterlambatan = parseInt((document.getElementById("invoiceLatePenalty")?.innerText || "0").replace(/\D/g, ""), 10) || 0;
         let displayBiayaKirim = waSummary.totalBiayaNum > 0 ? waSummary.totalBiayaNum.toLocaleString('en-US') : "0";
         let displayBiayaPacking = waSummary.biayaPackingNum > 0 ? waSummary.biayaPackingNum.toLocaleString('en-US') : "0";
         let displayTotalTagihan = totalTagihanBulanIni > 0 ? totalTagihanBulanIni.toLocaleString('en-US') : "0";
+        const barisDenda = dendaKeterlambatan > 0
+            ? `Denda Keterlambatan Pelunasan : Rp ${dendaKeterlambatan.toLocaleString('en-US')}\n`
+            : "";
 
         // find PIC numbers from No_surat sheet (cloudData.noSurat)
         const noSurat = cariNoSurat(targetIdPelanggan) || {};
@@ -2168,6 +2173,7 @@ return (
                   `Total Kiriman : ${waSummary.totalItem} item\n` +
                   `Biaya Kirim : Rp ${displayBiayaKirim}\n` +
                   `Biaya Packing : Rp ${displayBiayaPacking}\n` +
+                  barisDenda +
                   `*Total Tagihan Bulan ini : Rp ${displayTotalTagihan}*\n\n` +
                   `Mohon untuk segera melakukan pembayaran ke rekening :\n` +
                   `*BRI* : No Rek: 0024-01-001238-30-3 an. POS INDONESIA\n` +
