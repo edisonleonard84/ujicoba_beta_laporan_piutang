@@ -127,16 +127,18 @@
         }
         .table-report th, .table-report td {
             border: 1px solid #dfe3e8;
-            padding: 5px 6px;
+            padding: 7px 6px;
             vertical-align: middle;
             font-size: 11px;
+            line-height: 1.3;
+            text-align: center;
         }
         
         .table-report th {
             background-color: #fff3b0 !important;
             color: #000000 !important;
             font-weight: bold;
-            text-align: center;
+            padding: 9px 6px;
         }
         
         .table-report tbody tr:nth-child(even) {
@@ -146,10 +148,26 @@
             background-color: #f7f9fc;
         }
         
-        .table-report th:nth-child(1), .table-report td:nth-child(1) { width: 45px; text-align: center; }
-        .table-report th:nth-child(2), .table-report td:nth-child(2) { width: 160px; text-align: center; }
-        .table-report th:nth-child(3), .table-report td:nth-child(3) { width: 110px; text-align: center; }
-        .table-report th:nth-child(4), .table-report td:nth-child(4) { width: 200px; }
+        .table-report th:nth-child(1), .table-report td:nth-child(1) { width: 7%; }
+        .table-report th:nth-child(2), .table-report td:nth-child(2) { width: 18%; }
+        .table-report th:nth-child(3), .table-report td:nth-child(3) { width: 15%; }
+        .table-report th:nth-child(n+4), .table-report td:nth-child(n+4) { width: 15%; }
+        .table-report td:nth-child(n+4) { text-align: right; }
+
+        .additional-table {
+            min-width: 1250px;
+            margin-bottom: 0;
+            background: #fff;
+            font-size: 11px;
+        }
+        .additional-table th {
+            background: #fff3b0;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .additional-table td { vertical-align: middle; }
+        .additional-table .text-num { text-align: right; white-space: nowrap; }
         
         .text-center { text-align: center; }
         .text-end { text-align: right; }
@@ -633,11 +651,16 @@
             .invoice-reference-page .invoice-reference-bottom-notes li { margin-bottom: 1mm; }
             body.print-page-2 .page-section.page-1 { display: none !important; }
             body.print-page-2 .page-section.page-2 { display: block !important; page-break-before: auto; break-inside: avoid-page !important; page-break-inside: avoid !important; }
+            body.print-page-3 .page-section.page-1,
+            body.print-page-3 .page-section.page-2 { display: none !important; }
+            body.print-page-3 .page-section.page-3 { display: block !important; page-break-before: auto; }
             body.print-both .page-section { display: none !important; }
             body.print-both .page-section.page-1,
-            body.print-both .page-section.page-2 { display: block !important; }
+            body.print-both .page-section.page-2,
+            body.print-both .page-section.page-3 { display: block !important; }
             body.print-both .page-section.page-1 { break-after: page !important; page-break-after: always !important; }
             body.print-both .page-section.page-2 { break-before: page !important; page-break-before: always !important; }
+            body.print-both .page-section.page-3 { break-before: page !important; page-break-before: always !important; }
         }
         /* debug-panel removed */
 
@@ -882,6 +905,7 @@
         /* PARAMETER PRINT JAMINAN SATU KERTAS PDF A4 - DIOPTIMALKAN (HURUF DIPERKECIL & RAPAT) */
         @media print {
             @page { size: A4 portrait; margin: 8mm 12mm 8mm 12mm; }
+            @page transaction-landscape { size: A4 landscape; margin: 8mm; }
             *, *::before, *::after { box-sizing: border-box; }
             body { background-color: #fff; font-size: 8pt; line-height: 1.15; color: #000; padding: 0; margin: 0; width: 100%; }
             .control-panel, .no-print, .toast-container, .page-nav, .page-toggle, .page-nav-wrapper { display: none !important; }
@@ -936,10 +960,12 @@
 
             #additionalPage { max-width: none !important; margin: 0 !important; }
             #additionalPage .table-responsive { overflow: visible !important; }
-            .additional-table { width: 100% !important; table-layout: fixed; font-size: 6.5pt; }
-            .additional-table th, .additional-table td { padding: 2px 3px; font-size: 6.5pt; white-space: normal; overflow-wrap: anywhere; }
+            .page-section.page-3 { page: transaction-landscape; }
+            .additional-table { width: 100% !important; min-width: 0 !important; table-layout: fixed; font-size: 7.5pt; }
+            .additional-table th, .additional-table td { padding: 2px 3px; font-size: 7.5pt; white-space: normal; overflow-wrap: anywhere; }
             .additional-table thead { display: table-header-group; }
             .additional-table tr { break-inside: avoid; page-break-inside: avoid; }
+            .additional-page-title { padding: 6px 4px; font-size: 10pt; margin-bottom: 8px; background-color: #ffee55 !important; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -997,7 +1023,7 @@
         
         <div class="d-flex flex-grow-1 flex-wrap gap-2 align-items-end">
             <div id="panelIdKorporat" style="flex: 2; min-width: 180px;">
-                <label for="selectIdPelanggan" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Pilih ID Korporat:</label>
+                <label for="selectIdPelanggan" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Pilih ID Pelanggan:</label>
                 <select id="selectIdPelanggan" class="form-select form-select-sm" onchange="renderTabel(); populateAdditionalTable()">
                     <option value="">Memuat data...</option>
                 </select>
@@ -1050,8 +1076,9 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#" onclick="cetakKePdf('both'); return false;">Print Semua</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page1'); return false;">Rekap transaksi</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page2'); return false;">Invoice</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page1'); return false;">Invoice</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page2'); return false;">Rekap transaksi</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page3'); return false;">Rincian Transaksi</a></li>
                 </ul>
             </div>
             <button id="btnExportExcel" class="btn-custom-icon btn-sheets-icon" onclick="exportAdditionalToCSV()" title="Export Excel">
@@ -1082,21 +1109,22 @@
 
 <div class="page-nav-wrapper no-print" aria-label="Navigasi Halaman Laporan">
     <div class="page-nav" role="group">
-        <button type="button" id="btnPage1" class="page-toggle active" onclick="setActivePage(1)">Rekap transaksi</button>
-        <button type="button" id="btnPage2" class="page-toggle" onclick="setActivePage(2)">Invoice</button>
+        <button type="button" id="btnPage1" class="page-toggle active" onclick="setActivePage(1)">Invoice</button>
+        <button type="button" id="btnPage2" class="page-toggle" onclick="setActivePage(2)">Rekap transaksi</button>
+        <button type="button" id="btnPage3" class="page-toggle" onclick="setActivePage(3)">Rincian Transaksi</button>
     </div>
 </div>
 
-<div class="page-section page-1 active">
+<div class="page-section page-2">
 <div class="report-container">
     <div class="header-title">
 
-        DAFTAR TRANSAKSI PENGIRIMAN SURAT DAN PAKET
+        REKAP TRANSAKSI PENGIRIMAN DOKUMEN DAN PAKET
         <div class="header-meta-grid">
             <div>Nama Pelanggan</div>
             <div>: <span id="headerNamaKorporat">-</span></div>
             
-            <div>ID Korporat</div>
+            <div>ID Pelanggan</div>
             <div>: <span id="headerKode">-</span></div>
             
             <div>Periode Transaksi</div>
@@ -1107,10 +1135,13 @@
     <table class="table-report">
         <thead>
             <tr>
-                <th>NO</th>
-                <th>TANGGAL PENGIRIMAN</th> 
-                <th>JUMLAH KIRIMAN</th>
-                <th>BIAYA PENGIRIMAN</th>
+                <th>No.</th>
+                <th>Tgl. Transaksi</th>
+                <th>Jml. Transaksi</th>
+                <th>Biaya Pengiriman</th>
+                <th>PPN</th>
+                <th>HTNB</th>
+                <th>Total Biaya Pengiriman</th>
             </tr>
         </thead>
         <tbody id="tabelBody"></tbody>
@@ -1168,7 +1199,7 @@
 
 </div>
 
-<div class="page-section page-2">
+<div class="page-section page-1 active">
     <div class="invoice-reference-page">
         <div hidden>
             <span id="invoiceNomor"></span><span id="invoiceRekening"></span><span id="invoiceNpwp"></span>
@@ -1217,18 +1248,18 @@
                 <tr><th>No</th><th>URAIAN</th><th>Produk</th><th>Jumlah transaksi</th><th>Besar Uang</th></tr>
             </thead>
             <tbody>
-                <tr><td>1.</td><td>ONGKIR Bulan <span id="invoicePeriodTable">-</span></td><td>Paket</td><td><span id="invoiceUnit">0</span> pcs</td><td id="invoiceSubtotal">0</td></tr>
-                <tr><td></td><td>PPN PAKET</td><td></td><td></td><td id="invoicePajak">0</td></tr>
+                <tr><td>1.</td><td>Biaya Pengiriman Bulan <span id="invoicePeriodTable">-</span></td><td>Paket</td><td><span id="invoiceUnit">0</span> pcs</td><td id="invoiceSubtotal">0</td></tr>
+                <tr><td></td><td>PPN Dokumen dan Paket</td><td></td><td></td><td id="invoicePajak">0</td></tr>
                 <tr class="invoice-highlight"><td></td><td>TOTAL BRUTO</td><td></td><td></td><td id="invoiceBruto">0</td></tr>
                 <tr><td></td><td>DISKON KORPOR 10 %</td><td></td><td></td><td id="invoiceDiskon">0</td></tr>
                 <tr><td></td><td>PPN SETELAH DISKON</td><td></td><td></td><td id="invoicePpnSetelahDiskon">0</td></tr>
                 <tr><td></td><td>HTNB / ASURANSI</td><td></td><td></td><td id="invoiceDenda">0</td></tr>
-                <tr><td></td><td>PPN HTNB</td><td></td><td></td><td>0</td></tr>
+                <tr><td></td><td>PPN HTNB</td><td></td><td></td><td id="invoicePpnHtnb">0</td></tr>
                 <tr class="invoice-highlight"><td></td><td>TOTAL PIUTANG NETTING</td><td></td><td></td><td id="invoiceNetting">0</td></tr>
-                <tr><td></td><td>PPH 23 BUPOT ( 2% dr ONGKIR NETTING)</td><td></td><td></td><td id="invoicePph23">0</td></tr>
+                <tr><td></td><td>PPH 23 BUPOT ( 2% dari Biaya Pengiriman)</td><td></td><td></td><td id="invoicePph23">0</td></tr>
                 <tr><td></td><td>BIAYA PACKING</td><td></td><td></td><td id="invoicePacking">0</td></tr>
                 <tr><td></td><td>DENDA KETERLAMBATAN PELUNASAN<span id="invoiceLatePenaltyLabel"></span></td><td></td><td></td><td id="invoiceLatePenalty">0</td></tr>
-                <tr class="invoice-highlight"><td></td><td>TOTAL YANG HARUS DITRANSFER MITRA</td><td></td><td></td><td id="invoiceTotal">0</td></tr>
+                <tr class="invoice-highlight"><td></td><td>TOTAL DITRANSFER MITRA</td><td></td><td></td><td id="invoiceTotal">0</td></tr>
             </tbody>
         </table>
 
@@ -1255,11 +1286,48 @@
     </div>
 </div>
 
+<div class="page-section page-3">
+    <div id="additionalPage" class="report-container">
+        <div class="header-title additional-page-title">
+            RINCIAN TRANSAKSI PENGIRIMAN DOKUMEN DAN PAKET
+            <div class="header-meta-grid">
+                <div>Nama Pelanggan</div>
+                <div>: <span id="detailNamaPelanggan">-</span></div>
+                <div>ID Pelanggan</div>
+                <div>: <span id="detailIdPelanggan">-</span></div>
+                <div>Periode Transaksi</div>
+                <div>: <span id="detailPeriodeTransaksi">-</span></div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered additional-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>No. Resi</th>
+                        <th>Nama Pengirim</th>
+                        <th>Nama Penerima</th>
+                        <th>Alamat</th>
+                        <th>Layanan</th>
+                        <th>Berat</th>
+                        <th>Biaya Kirim</th>
+                        <th>PPN</th>
+                        <th>HTNB</th>
+                        <th>Total Biaya Kirim</th>
+                        <th>Tgl Transaksi</th>
+                    </tr>
+                </thead>
+                <tbody id="additionalTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6_b2SaUXQ6UMBQ-zv0jwXln-ptExbmot4u8qnjol90ARBRewofXvgFXrZkgAjLQGu4Q/exec";
-    const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1wMYjpJDuQjcfDhJZgOamkgxt75e1tkeyutyv8P0cq7c/edit?usp=sharing";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUcVu3deeNOH1Du3l1esFmqzHUHThn-W7PXIBnzal2SeVJp2-NtP3S0-L62CY-66qO/exec";
+    const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1uHIj7d68isk1b_O14xY2pGCChqRwRfi08JP5_ysjZ30/edit?usp=sharing";
     
     const USER_ROLES = {
         SUPERUSER: 'superuser',
@@ -1268,11 +1336,13 @@
     };
 
     let cloudData = { laporanUtama: [], saldoLalu: [], pelunasan: [], packing: [], users: [] };
+    let customerIds = [];
     let currentUser = null;
     let currentRole = '';
+    let apiToken = '';
     let globalNamaKorporat = ""; 
     let waSummary = { totalItem: 0, totalBiayaNum: 0, biayaPackingNum: 0, saldoAkhirNum: 0 };
-    let invoiceSummary = { jumlahUnit: 0, tarifPerUnit: 0, subtotal: 0, diskon: 0, denda: 0, pajak: 0, total: 0 };
+    let invoiceSummary = { jumlahUnit: 0, tarifPerUnit: 0, ongkir: 0, diskon: 0, htnb: 0, pajak: 0, ppnHtnb: 0, total: 0 };
     
     const namaBulanIndo = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
     const namaBulanEng = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1462,14 +1532,13 @@
         const targetId = document.getElementById('selectIdPelanggan').value.trim().toUpperCase();
         const bulanDipilih = parseInt(document.getElementById('selectBulan').value);
         const tahunDipilih = parseInt(document.getElementById('inputTahun').value);
+        const targetNama = globalNamaKorporat || '-';
+        document.getElementById('detailNamaPelanggan').innerText = targetNama;
+        document.getElementById('detailIdPelanggan').innerText = targetId || '-';
+        document.getElementById('detailPeriodeTransaksi').innerText =
+            `${namaBulanIndo[bulanDipilih]} ${tahunDipilih}`;
 
-        const data = Array.isArray(cloudData.laporanUtama) ? cloudData.laporanUtama : [];
-        const noSuratRows = Array.isArray(cloudData.noSurat) ? cloudData.noSurat : [];
-
-        // Ambil NPWP & ALAMAT dari sheet No_surat
-        const noSuratItem = noSuratRows.find(x => (x.idPelanggan || '').toString().trim().toUpperCase() === targetId) || {};
-        const npwpFromNoSurat = (noSuratItem.npwp || '').toString().trim();
-        const alamatFromNoSurat = (noSuratItem.alamat || '').toString().trim();
+        const data = Array.isArray(cloudData.detailTransaksi) ? cloudData.detailTransaksi : [];
 
         const rows = data.filter(r => {
             if (!r.idPelanggan) return false;
@@ -1486,60 +1555,45 @@
         });
 
         rows.forEach((row, idx) => {
-            const nomor = idx + 1;
-            const tanggal = row.tglTrx || '';
-            const nama = row.namaKorporat || '';
-
-            // fallback: dari laporanUtama jika No_surat kosong
-            const npwp = npwpFromNoSurat || row.npwp || '';
-            const alamat = alamatFromNoSurat || row.alamat || '';
-
-            const pendapatanNum = parseNumberForCalc(row.total);
-            const dpp = pendapatanNum * (100/111);
-            const ppn = dpp * 0.11;
+            const ongkir = parseNumberForCalc(row.ongkir);
+            const ppn = parseNumberForCalc(row.ppn);
+            const htnb = parseNumberForCalc(row.htnb);
+            const total = parseNumberForCalc(row.total);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${nomor}</td>
-                <td>${tanggal}</td>
-                <td><input class="form-control form-control-sm" data-field="nodoc" value=""></td>
-                <td><input class="form-control form-control-sm" data-field="npwp" value="${escapeHtml(npwp)}"></td>
-                <td>${escapeHtml(nama)}</td>
-                <td><input class="form-control form-control-sm" data-field="alamat" value="${escapeHtml(alamat)}"></td>
-                <td><input class="form-control form-control-sm" data-field="keterangan" value=""></td>
-                <td class="text-num">${formatNumber(pendapatanNum)}</td>
-                <td class="text-num">${formatNumber(dpp)}</td>
-                <td class="text-num">${formatNumber(ppn)}</td>
+                <td>${idx + 1}</td>
+                <td>${escapeHtml(row.noResi || '')}</td>
+                <td>${escapeHtml(row.namaPengirim || '')}</td>
+                <td>${escapeHtml(row.namaPenerima || '')}</td>
+                <td>${escapeHtml(row.kota || '')}</td>
+                <td>${escapeHtml(row.layanan || '')}</td>
+                <td class="text-num">${escapeHtml(row.berat || '')}</td>
+                <td class="text-num">${formatNumber(ongkir)}</td>
+                <td class="${ppn === 0 ? 'text-center' : 'text-num'}">${ppn === 0 ? '-' : formatNumber(ppn)}</td>
+                <td class="${htnb === 0 ? 'text-center' : 'text-num'}">${htnb === 0 ? '-' : formatNumber(htnb)}</td>
+                <td class="text-num">${formatNumber(total)}</td>
+                <td class="text-center">${escapeHtml(row.tglTrx || '')}</td>
             `;
             tbody.appendChild(tr);
         });
 
         if (rows.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Tidak ada data untuk ID terpilih.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">Tidak ada data untuk ID terpilih.</td></tr>';
         }
     }
 
     function exportAdditionalToCSV() {
         const rows = [];
-        const header = ['No','Tanggal Transaksi','No.Doc (SAP)','NPWP','NAMA MITRA','ALAMAT','Keterangan','PENDAPATAN','DPP','PPN'];
+        const header = ['No.','No. Resi','Nama Pengirim','Nama Penerima','Alamat','Layanan','Berat','Biaya Kirim','PPN','HTNB','Total Biaya Kirim','Tgl Transaksi'];
         rows.push(header);
         const tbody = document.getElementById('additionalTableBody');
         if (!tbody) return;
         const trList = tbody.querySelectorAll('tr');
         trList.forEach(tr => {
             const cells = tr.children;
-            if (!cells || cells.length < 10) return;
-            const no = cells[0].innerText.trim();
-            const tanggal = cells[1].innerText.trim();
-            const nodoc = (cells[2].querySelector('input') || {}).value || '';
-            const npwp = (cells[3].querySelector('input') || {}).value || '';
-            const nama = cells[4].innerText.trim();
-            const alamat = (cells[5].querySelector('input') || {}).value || '';
-            const keterangan = (cells[6].querySelector('input') || {}).value || '';
-            const pendapatan = parseNumberForCalc(cells[7].innerText || cells[7].textContent);
-            const dpp = parseNumberForCalc(cells[8].innerText || cells[8].textContent);
-            const ppn = parseNumberForCalc(cells[9].innerText || cells[9].textContent);
-            rows.push([no,tanggal,nodoc,npwp,nama,alamat,keterangan,pendapatan,dpp,ppn]);
+            if (!cells || cells.length < 12) return;
+            rows.push(Array.from(cells, cell => cell.innerText.trim()));
         });
 
         if (rows.length <= 1) { alert('Tidak ada data untuk diekspor.'); return; }
@@ -1631,6 +1685,7 @@
     function logout() {
         currentUser = null;
         currentRole = '';
+        apiToken = '';
         hideLandingOverlay();
         hideAppContent();
         showLoginOverlay();
@@ -1661,12 +1716,26 @@
                 body: JSON.stringify({ action: 'login', username, password })
             });
 
-            const result = await response.json();
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                throw new Error('Respons Apps Script bukan JSON. Periksa deployment Web App.');
+            }
+
+            if (!response.ok) {
+                throw new Error(result.message || `Login gagal (HTTP ${response.status}).`);
+            }
             if (!result.success) {
                 showLoginError(result.message || 'Login gagal.');
                 return;
             }
+            if (!result.token || !result.user) {
+                throw new Error('Respons login tidak menyertakan sesi yang valid.');
+            }
 
+            apiToken = result.token;
             currentUser = result.user;
             currentRole = currentUser.role || '';
             hideLoginOverlay();
@@ -1677,7 +1746,7 @@
             await ambilDataDariSheets();
         } catch (err) {
             console.error(err);
-            showLoginError('Terjadi kesalahan saat login.');
+            showLoginError(err.message || 'Terjadi kesalahan saat login.');
         }
     }
 
@@ -1757,34 +1826,36 @@
         const dueDateInput = document.getElementById("invoiceJatuhTempo");
         updateJatuhTempoDariInvoice(invoiceDateInput, dueDateInput);
 
-        const taxRateInput = document.getElementById("invoiceTaxRate");
-        const taxRate = taxRateInput ? (parseFloat(taxRateInput.value) || 0) : 0;
-
         const discountInput = document.getElementById("invoiceDiscount");
         const discount = discountInput ? (parseInt(discountInput.value.replace(/\D/g, ''), 10) || 0) : 0;
 
-        const dendaRateInput = document.getElementById("invoiceDendaRate");
-        const dendaRate = dendaRateInput ? (parseFloat(dendaRateInput.value) || 0) : 0;
-
-        const subtotal = invoiceSummary.subtotal || 0;
+        const ongkir = invoiceSummary.ongkir || 0;
+        const pajak = invoiceSummary.pajak || 0;
+        const htnb = invoiceSummary.htnb || 0;
+        const ppnHtnb = invoiceSummary.ppnHtnb || 0;
+        const totalBruto = ongkir + pajak;
         const diskon = discount;
-        const denda = subtotal * (dendaRate / 100);
-        const pajak = subtotal * (taxRate / 100);
-        const totalNetting = Math.max(0, subtotal - diskon + denda);
+        const ppnSetelahDiskon = Math.max(0, pajak - diskon);
+        const totalNetting = Math.max(0, totalBruto - diskon + ppnSetelahDiskon + htnb + ppnHtnb);
         const pelangganPph23Dikecualikan = [
             "BANKBNI08863A",
-            "BANKBRI08863A",
+            "LNKPPN08863A",
             "LNPNENDE08863A",
             "LNKARANTIN08863A",
             "LNMAPAG05863A",
-            "BANKMANDIRI08863A",
-            "LNKPP08863A",
-            "LNKPPN08863A"
+            "LNMAPAG05863B",
+            "LNMAPN05863A",
+            "LNPERURI03413B",
+            "ASRRAHARJA05863A",
+            "INDSUCOFIND07600B",
+            "DAGPRACI05863A",
+            "BANKBRI08863A",
+            "LOGKOPANSIK05863A"
         ].includes(targetIdPelanggan);
-        const nilaiPph23 = pelangganPph23Dikecualikan ? 0 : Math.round(totalNetting * 0.02);
+        const nilaiPph23 = pelangganPph23Dikecualikan ? 0 : Math.round(ongkir * 0.02);
         const biayaPacking = waSummary.biayaPackingNum || 0;
         const nomorCetakan = parseInt(document.getElementById("invoiceCopyNumber").value, 10) || 1;
-        const dasarDenda = Math.max(0, subtotal);
+        const dasarDenda = Math.max(0, totalBruto);
         const dasarTagihanTransfer = Math.max(0, totalNetting - nilaiPph23 + biayaPacking);
         const dendaCetakanKetiga = Math.round(dasarDenda * 0.02);
         const labelDenda = nomorCetakan === 2
@@ -1833,20 +1904,22 @@
         document.getElementById("invoicePeriod").innerText = selectedPeriodText;
         document.getElementById("invoicePeriodTable").innerText = selectedPeriodText;
         document.getElementById("invoiceUnit").innerText = unit.toLocaleString('en-US');
-        document.getElementById("invoiceJumlah").innerText = `Rp ${formatRupiah(total)}`;
+        const formatInvoiceAmount = value => Number(value) === 0 ? "-" : formatRupiah(value);
+        document.getElementById("invoiceJumlah").innerText = `Rp ${formatInvoiceAmount(total)}`;
         document.getElementById("invoiceTerbilang").innerText = terbilangRupiah(total);
-        document.getElementById("invoiceSubtotal").innerText = formatRupiah(subtotal);
-        document.getElementById("invoiceBruto").innerText = formatRupiah(subtotal + pajak);
-        document.getElementById("invoiceDiskon").innerText = formatRupiah(diskon);
-        document.getElementById("invoicePpnSetelahDiskon").innerText = formatRupiah(Math.max(0, pajak - diskon));
-        document.getElementById("invoiceDenda").innerText = formatRupiah(denda);
-        document.getElementById("invoicePajak").innerText = formatRupiah(pajak);
-        document.getElementById("invoiceNetting").innerText = formatRupiah(totalNetting);
-        document.getElementById("invoicePph23").innerText = formatRupiah(nilaiPph23);
-        document.getElementById("invoicePacking").innerText = formatRupiah(biayaPacking);
+        document.getElementById("invoiceSubtotal").innerText = formatInvoiceAmount(ongkir);
+        document.getElementById("invoiceBruto").innerText = formatInvoiceAmount(totalBruto);
+        document.getElementById("invoiceDiskon").innerText = formatInvoiceAmount(diskon);
+        document.getElementById("invoicePpnSetelahDiskon").innerText = formatInvoiceAmount(ppnSetelahDiskon);
+        document.getElementById("invoiceDenda").innerText = formatInvoiceAmount(htnb);
+        document.getElementById("invoicePajak").innerText = formatInvoiceAmount(pajak);
+        document.getElementById("invoicePpnHtnb").innerText = formatInvoiceAmount(ppnHtnb);
+        document.getElementById("invoiceNetting").innerText = formatInvoiceAmount(totalNetting);
+        document.getElementById("invoicePph23").innerText = formatInvoiceAmount(nilaiPph23);
+        document.getElementById("invoicePacking").innerText = formatInvoiceAmount(biayaPacking);
         document.getElementById("invoiceLatePenaltyLabel").innerText = labelDenda;
-        document.getElementById("invoiceLatePenalty").innerText = formatRupiah(dendaKeterlambatan);
-        document.getElementById("invoiceTotal").innerText = formatRupiah(total);
+        document.getElementById("invoiceLatePenalty").innerText = formatInvoiceAmount(dendaKeterlambatan);
+        document.getElementById("invoiceTotal").innerText = formatInvoiceAmount(total);
         invoiceSummary.total = total;
         document.getElementById("suratSaldoAkhir").innerText = formatRupiah(total);
         document.getElementById("suratTerbilang").innerText = terbilangRupiah(total);
@@ -1857,19 +1930,31 @@ async function ambilDataDariSheets() {
     try {
 
         const response = await fetch(
-            SCRIPT_URL + '?_=' + new Date().getTime()
+            SCRIPT_URL + '?token=' + encodeURIComponent(apiToken) + '&_=' + new Date().getTime()
         );
 
         const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || `Gagal memuat database (HTTP ${response.status}).`);
+        }
+        ['customerIds', 'laporanUtama', 'detailTransaksi', 'saldoLalu', 'pelunasan', 'packing', 'noSurat'].forEach(key => {
+            if (!Array.isArray(result[key])) {
+                throw new Error(`Respons Apps Script tidak memiliki data ${key} dalam format yang benar.`);
+            }
+        });
 
         console.log('DATABASE:', result);
 
+        customerIds = result.customerIds
+            .map(id => (id || '').toString().trim().toUpperCase())
+            .filter(id => id !== '');
         cloudData = {
-            laporanUtama : result.laporanUtama || [],
-            saldoLalu : result.saldoLalu || [],
-            pelunasan : result.pelunasan || [],
-            packing : result.packing || [],
-            noSurat : result.noSurat || []
+            laporanUtama : result.laporanUtama,
+            detailTransaksi : result.detailTransaksi,
+            saldoLalu : result.saldoLalu,
+            pelunasan : result.pelunasan,
+            packing : result.packing,
+            noSurat : result.noSurat
         };
 
         populasiDropdownPelanggan();
@@ -1892,7 +1977,7 @@ async function ambilDataDariSheets() {
 
         alert(
             'Gagal memuat database.\n\n' +
-            'Pastikan deployment Apps Script terbaru masih aktif.'
+            (error.message || 'Pastikan deployment Apps Script terbaru masih aktif.')
         );
 
     }
@@ -1901,10 +1986,7 @@ async function ambilDataDariSheets() {
     // MEMBUAT ID PELANGGAN UNIK BERDASARKAN SHEET DATA_TRANSAKSI
     function populasiDropdownPelanggan() {
         const selectElement = document.getElementById("selectIdPelanggan");
-        const databaseUtama = cloudData.laporanUtama || [];
-        
-        let semuaId = databaseUtama.map(row => (row.idPelanggan || "").trim().toUpperCase()).filter(id => id !== "");
-        let idUnik = [...new Set(semuaId)];
+        const idUnik = [...new Set(customerIds)];
         idUnik.sort();
 
         selectElement.innerHTML = "";
@@ -1935,7 +2017,7 @@ async function ambilDataDariSheets() {
         tbody.innerHTML = ""; 
 
         if(!targetIdPelanggan) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Silakan pilih ID Korporat terlebih dahulu</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Silakan pilih ID Pelanggan terlebih dahulu</td></tr>`;
             globalNamaKorporat = "-";
             waSummary.saldoAkhirNum = 0;
             updateSuratTagihan();
@@ -1943,6 +2025,9 @@ async function ambilDataDariSheets() {
         }
 
         let totalItemAkumulasi = 0;
+        let totalOngkirAkumulasi = 0;
+        let totalPpnAkumulasi = 0;
+        let totalHtnbAkumulasi = 0;
         let totalBiayaAkumulasi = 0;
         let namaKorporatTerdeteksi = "";
         const databaseUtama = cloudData.laporanUtama || [];
@@ -1968,33 +2053,41 @@ return (
 
             });
 
-            let subTotalTrxHariIni = 0;
-            let subTotalBiayaHariIni = 0;
-            let adaDataHariIni = false;
+            let jumlahTrx = 0;
+            let subTotalOngkir = 0;
+            let subTotalPpn = 0;
+            let subTotalHtnb = 0;
 
-            if (kumpulanBarisCocok.length > 0) {
-                adaDataHariIni = true;
-                kumpulanBarisCocok.forEach(baris => {
-                    let bersihTrx = angkaBersih(baris.trx);
-                    let bersihTotal = angkaBersih(baris.total);
-                    subTotalTrxHariIni += parseInt(bersihTrx) || 0;
-                    subTotalBiayaHariIni += parseInt(bersihTotal) || 0;
-                    if(baris.namaKorporat && !namaKorporatTerdeteksi) {
-                        namaKorporatTerdeteksi = baris.namaKorporat.replace(/_/g, " "); 
-                    }
-                });
-                totalItemAkumulasi += subTotalTrxHariIni;
-                totalBiayaAkumulasi += subTotalBiayaHariIni;
-            }
+            kumpulanBarisCocok.forEach(baris => {
+                jumlahTrx += Number(baris.trx) || 1;
+                subTotalOngkir += parseInt(angkaBersih(baris.ongkir)) || 0;
+                subTotalPpn += parseInt(angkaBersih(baris.ppn)) || 0;
+                subTotalHtnb += parseInt(angkaBersih(baris.htnb)) || 0;
+                if(baris.namaKorporat && !namaKorporatTerdeteksi) {
+                    namaKorporatTerdeteksi = baris.namaKorporat.replace(/_/g, " ");
+                }
+            });
 
-            let displayTrx = adaDataHariIni ? subTotalTrxHariIni : "-";
-            let displayOngkir = adaDataHariIni ? subTotalBiayaHariIni.toLocaleString('en-US') : "-";
+            const subTotalBea = subTotalOngkir + subTotalPpn + subTotalHtnb;
+            totalItemAkumulasi += jumlahTrx;
+            totalOngkirAkumulasi += subTotalOngkir;
+            totalPpnAkumulasi += subTotalPpn;
+            totalHtnbAkumulasi += subTotalHtnb;
+            totalBiayaAkumulasi += subTotalBea;
 
-            let rowHtml = `<tr>
+            const hasTransactions = jumlahTrx > 0;
+            const amountCell = value => {
+                const isZero = !hasTransactions || value === 0;
+                return `<td class="${isZero ? 'text-center' : 'text-end'}">${isZero ? '-' : value.toLocaleString('en-US')}</td>`;
+            };
+            const rowHtml = `<tr>
                 <td class="text-center">${i}</td>
                 <td>${tglDuaDigit} ${keywordBulan} ${tahunDipilih}</td>
-                <td class="text-center">${displayTrx}</td>
-                <td>Rp <span class="float-end">${displayOngkir}</span></td>
+                <td class="text-center">${hasTransactions ? jumlahTrx : "-"}</td>
+                ${amountCell(subTotalOngkir)}
+                ${amountCell(subTotalPpn)}
+                ${amountCell(subTotalHtnb)}
+                ${amountCell(subTotalBea)}
             </tr>`;
             tbody.insertAdjacentHTML('beforeend', rowHtml);
         }
@@ -2008,13 +2101,16 @@ return (
             document.getElementById("headerNamaKorporat").innerText = globalNamaKorporat;
         }
 
-        let txtTotalBiaya = totalBiayaAkumulasi > 0 ? totalBiayaAkumulasi.toLocaleString('en-US') : "0";
-        let txtTotalItem = totalItemAkumulasi > 0 ? totalItemAkumulasi : "0";
+        let txtTotalItem = totalItemAkumulasi > 0 ? totalItemAkumulasi : "-";
+        const totalAmountCell = value => `<td class="${value === 0 ? 'text-center' : 'text-end'}">${value === 0 ? '-' : value.toLocaleString('en-US')}</td>`;
 
         let totalRow = `<tr style="font-weight: bold;">
-            <td colspan="2" class="text-end">JUMLAH</td>
+            <td colspan="2">JUMLAH</td>
             <td class="text-center">${txtTotalItem}</td>
-            <td>Rp <span class="float-end">${txtTotalBiaya}</span></td>
+            ${totalAmountCell(totalOngkirAkumulasi)}
+            ${totalAmountCell(totalPpnAkumulasi)}
+            ${totalAmountCell(totalHtnbAkumulasi)}
+            ${totalAmountCell(totalBiayaAkumulasi)}
         </tr>`;
         tbody.insertAdjacentHTML('beforeend', totalRow);
 
@@ -2067,12 +2163,13 @@ return (
 
         invoiceSummary = {
             jumlahUnit: Number(txtTotalItem) || 0,
-            tarifPerUnit: totalBiayaAkumulasi > 0 && Number(txtTotalItem) > 0 ? Math.round(totalBiayaAkumulasi / Number(txtTotalItem)) : 0,
-            subtotal: totalBiayaAkumulasi || 0,
+            tarifPerUnit: totalOngkirAkumulasi > 0 && Number(txtTotalItem) > 0 ? Math.round(totalOngkirAkumulasi / Number(txtTotalItem)) : 0,
+            ongkir: totalOngkirAkumulasi,
             diskon: 0,
-            denda: 0,
-            pajak: Math.round((totalBiayaAkumulasi || 0) * 0.11),
-            total: totalBiayaAkumulasi + Math.round((totalBiayaAkumulasi || 0) * 0.11)
+            htnb: totalHtnbAkumulasi,
+            pajak: totalPpnAkumulasi,
+            ppnHtnb: 0,
+            total: totalOngkirAkumulasi + totalPpnAkumulasi
         };
 
         waSummary.totalItem = txtTotalItem;
@@ -2090,12 +2187,16 @@ return (
         const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
         let mmStr = (bulanDipilih + 1) < 10 ? '0' + (bulanDipilih + 1) : (bulanDipilih + 1);
         const judulAsli = document.title;
-        const suffix = printTarget === "page2" ? "Invoice" : (printTarget === "page1" ? "Laporan" : "Rekap_dan_Invoice");
+        const suffix = printTarget === "page1" ? "Invoice"
+            : printTarget === "page2" ? "Rekap"
+                : printTarget === "page3" ? "Rincian"
+                    : "Invoice_Rekap_dan_Rincian";
         document.title = `${mmStr}_${tahunDipilih}_${targetIdPelanggan}_${globalNamaKorporat}_${suffix}`;
         document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
         document.body.classList.remove("print-both");
         if (printTarget === "page1") document.body.classList.add("print-page-1");
         if (printTarget === "page2") document.body.classList.add("print-page-2");
+        if (printTarget === "page3") document.body.classList.add("print-page-3");
         if (printTarget === "both") document.body.classList.add("print-both");
         window.print();
         setTimeout(() => {
@@ -2123,7 +2224,7 @@ return (
         const tahunDipilih = document.getElementById("inputTahun").value;
         const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
         
-        if (!targetIdPelanggan) { alert("Silakan pilih ID Korporat."); return; }
+        if (!targetIdPelanggan) { alert("Silakan pilih ID Pelanggan."); return; }
 
         updateInvoicePage();
         const totalTagihanBulanIni = parseInt((document.getElementById("invoiceTotal")?.innerText || "0").replace(/\D/g, ""), 10) || 0;
@@ -2372,6 +2473,7 @@ async function uploadCSVFiles(files){
             method:'POST',
             body:JSON.stringify({
                 action:'uploadCSV',
+                token:apiToken,
                 data:merged
             })
         });
@@ -2391,7 +2493,7 @@ async function uploadCSVFiles(files){
 
         }else{
 
-            alert('Upload gagal');
+            alert(result.message || 'Upload gagal');
 
         }
 
@@ -2458,6 +2560,8 @@ function setActivePage(pageNumber){
     if(b1) b1.classList.toggle('active', pageNumber === 1);
     const b2 = document.getElementById('btnPage2');
     if(b2) b2.classList.toggle('active', pageNumber === 2);
+    const b3 = document.getElementById('btnPage3');
+    if(b3) b3.classList.toggle('active', pageNumber === 3);
 }
 </script>
 </body>
