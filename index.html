@@ -1083,7 +1083,7 @@
             <button id="buttonBukaSpreadsheet" class="btn-custom-icon btn-sheets-icon" onclick="bukaSpreadsheet()" title="Buka Sheets">
                 <i class="fa-regular fa-folder-open"></i>
             </button>
-            <button id="btnUploadCsv" class="btn-custom-icon btn-upload-icon" onclick="document.getElementById('csvInput').click()" title="Upload CSV">
+            <button id="btnUploadCsv" class="btn-custom-icon btn-upload-icon" onclick="document.getElementById('csvInput').click()" title="Upload CSV Data Transaksi">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
             </button>
             <div class="btn-group">
@@ -1342,7 +1342,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhqxvCidf6yNSYLCKlFfECtoF_a5EOr-7GR_b9o6Vmhf0sgQ3ryWQWGlv53TyCb6BPJQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCnFfVIEVxt8Jb6PXHsH8VoHw3AyIiz7QHm_3y2vvb5vokrdzlz__vgXD3425N8XCw0A/exec";
     const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1uHIj7d68isk1b_O14xY2pGCChqRwRfi08JP5_ysjZ30/edit?usp=sharing";
     
     const USER_ROLES = {
@@ -2378,16 +2378,6 @@ function updateProgress(val){
     pb.innerText = val + '%';
 }
 
-function generateHash(obj){
-    return [
-        obj.idPelanggan,
-        obj.namaKorporat,
-        obj.tglTrx,
-        obj.trx,
-        obj.total
-    ].join('|');
-}
-
 function detectDelimiter(line){
     let commaCount = 0;
     let semicolonCount = 0;
@@ -2411,14 +2401,15 @@ function detectDelimiter(line){
     return semicolonCount > commaCount ? ';' : ',';
 }
 
-function parseCSVLine(line, delimiter){
-    const result = [];
+function parseCSVDocument(text, delimiter){
+    const rows = [];
+    let row = [];
     let current = '';
     let inQuotes = false;
 
-    for(let i = 0; i < line.length; i++){
-        const char = line[i];
-        const next = line[i + 1];
+    for(let i = 0; i < text.length; i++){
+        const char = text[i];
+        const next = text[i + 1];
 
         if(char === '"' && inQuotes && next === '"'){
             current += '"';
@@ -2426,129 +2417,105 @@ function parseCSVLine(line, delimiter){
         }else if(char === '"'){
             inQuotes = !inQuotes;
         }else if(char === delimiter && !inQuotes){
-            result.push(current);
+            row.push(current);
+            current = '';
+        }else if((char === '\n' || char === '\r') && !inQuotes){
+            if(char === '\r' && next === '\n') i++;
+            row.push(current);
+            if(row.some(value => value.trim() !== '')) rows.push(row);
+            row = [];
             current = '';
         }else{
             current += char;
         }
     }
 
-    result.push(current);
-    return result;
+    if(inQuotes){
+        throw new Error('CSV memiliki tanda kutip yang tidak berpasangan.');
+    }
+    row.push(current);
+    if(row.some(value => value.trim() !== '')) rows.push(row);
+    return rows;
+}
+
+function normalizeCSVHeader(value){
+    return String(value || '').replace(/^\uFEFF/, '').trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
 async function uploadCSVFiles(files){
-
     if(!files || files.length === 0) return;
 
-    let merged = [];
-    let duplicate = 0;
-
+    const records = [];
     updateProgress(0);
 
-    for(let i=0;i<files.length;i++){
-
-        const file = files[i];
-
-        const tgl = file.name.replace(/\.csv$/i,'').trim();
-
-        const text = await file.text();
-
-        const rows = text.split('\n')
-            .map(r=>r.trim())
-            .filter(r=>r!=='');
-        const delimiter = rows.length ? detectDelimiter(rows[0]) : ',';
-
-        rows.forEach(line=>{
-
-            const c = parseCSVLine(line, delimiter).map(value => value.trim());
-
-            if(c.length < 4) return;
-            const firstCol = (c[0] || '').toLowerCase();
-            const secondCol = (c[1] || '').toLowerCase();
-            if(firstCol.includes('nama') && secondCol.includes('id')) return;
-            if(firstCol.includes('id') && secondCol.includes('nama')) return;
-
-            const formatNamaId = c.length >= 7 && !terlihatSepertiIdKorporat(c[0]) && terlihatSepertiIdKorporat(c[1]);
-            const formatIdNama = c.length >= 7 && terlihatSepertiIdKorporat(c[0]) && !terlihatSepertiIdKorporat(c[1]);
-
-            const obj = formatNamaId ? {
-                namaKorporat:(c[0]||'').trim(),
-                idPelanggan:(c[1]||'').trim().toUpperCase(),
-                jenisProduk:(c[2]||'').trim(),
-                trx:(c[3]||'0').trim(),
-                ongkir:(c[4]||'0').trim(),
-                ppn:(c[5]||'0').trim(),
-                total:(c[6]||'0').trim(),
-                tglTrx:(c[7]||tgl).trim()
-            } : formatIdNama ? {
-                idPelanggan:(c[0]||'').trim().toUpperCase(),
-                namaKorporat:(c[1]||'').trim(),
-                jenisProduk:(c[2]||'').trim(),
-                trx:(c[3]||'0').trim(),
-                ongkir:(c[4]||'0').trim(),
-                ppn:(c[5]||'0').trim(),
-                total:(c[6]||'0').trim(),
-                tglTrx:(c[7]||tgl).trim()
-            } : {
-                idPelanggan:(c[0]||'').trim().toUpperCase(),
-                namaKorporat:(c[1]||'').trim(),
-                trx:(c[2]||'0').trim(),
-                total:(c[3]||'0').trim(),
-                tglTrx:tgl
-            };
-
-            const key = generateHash(obj);
-
-            if(merged.some(x=>generateHash(x)===key)){
-                duplicate++;
-            }else{
-                merged.push(obj);
+    try {
+        for(let i=0;i<files.length;i++){
+            const file = files[i];
+            const text = (await file.text()).replace(/^\uFEFF/, '');
+            if(!text.trim()){
+                throw new Error(`${file.name}: CSV kosong.`);
             }
 
-        });
+            const delimiter = detectDelimiter(text.split(/\r?\n/, 1)[0]);
+            const rows = parseCSVDocument(text, delimiter);
+            const headers = rows[0].map(normalizeCSVHeader);
+            const requiredGroups = [
+                ['no resi', 'no. resi', 'resi'],
+                ['id pelanggan', 'idpelanggan'],
+                ['tgl kirim', 'tanggal kirim', 'tgl transaksi', 'tanggal transaksi']
+            ];
+            const missingHeader = requiredGroups.find(group => !headers.some(header => group.includes(header)));
+            if(missingHeader){
+                const label = missingHeader[0] === 'no resi' ? 'No Resi'
+                    : missingHeader[0] === 'id pelanggan' ? 'ID Pelanggan' : 'Tgl Kirim';
+                throw new Error(`${file.name}: kolom wajib "${label}" tidak ditemukan. Gunakan CSV detail Data_Transaksi.`);
+            }
 
-        const percent = Math.round(((i+1)/files.length)*100);
-        updateProgress(percent);
-    }
+            for(let rowIndex=1;rowIndex<rows.length;rowIndex++){
+                const values = rows[rowIndex];
+                const record = {};
+                headers.forEach((header, columnIndex) => {
+                    if(header) record[header] = (values[columnIndex] || '').trim();
+                });
+                records.push(record);
+            }
 
-    try{
+            updateProgress(Math.round(((i+1)/files.length)*100));
+        }
 
+        if(!records.length){
+            throw new Error('Tidak ada baris transaksi untuk diunggah.');
+        }
         const response = await fetch(SCRIPT_URL,{
             method:'POST',
             body:JSON.stringify({
                 action:'uploadCSV',
                 token:apiToken,
-                data:merged
+                data:records
             })
         });
 
-        const result = await response.json();
-
-        if(result.success){
-
-            alert(
-                `Upload berhasil\n` +
-                `Data baru: ${result.inserted}\n` +
-                `Duplicate lokal: ${duplicate}\n` +
-                `Duplicate backend: ${result.duplicate}`
-            );
-
-            await ambilDataDariSheets();
-
-        }else{
-
-            alert(result.message || 'Upload gagal');
-
+        const responseText = await response.text();
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            throw new Error('Respons server bukan JSON. Periksa deployment Apps Script.');
+        }
+        if(!response.ok || !result.success){
+            throw new Error(result.message || `Upload gagal (HTTP ${response.status}).`);
         }
 
-    }catch(err){
-
+        alert(`Upload berhasil\nData baru: ${result.inserted}\nDuplikat: ${result.duplicate}`);
+        if(result.inserted > 0){
+            await ambilDataDariSheets();
+        }
+    } catch(err) {
         console.error(err);
-        alert('Upload error');
-
+        alert(err.message || 'Upload error.');
+    } finally {
+        document.getElementById('csvInput').value = '';
     }
-
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
