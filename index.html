@@ -18,6 +18,24 @@
             border: 1px solid #dfe3e8; 
             border-radius: 10px; 
         }
+        #inputNomorSurat {
+            flex: 0 1 205px;
+            width: 205px;
+            min-width: 0;
+            border-radius: 0;
+            background-color: #fff;
+            box-shadow: none;
+        }
+        #inputNomorSurat:read-only {
+            color: #212529;
+            cursor: default;
+        }
+        #inputNomorUrutSurat {
+            flex: 0 0 54px;
+            width: 54px;
+            min-width: 54px;
+            text-align: center;
+        }
         
         /* OPTIMALISASI TOMBOL KONTROL PANEL (HANYA IKON) */
         .btn-custom-icon {
@@ -1047,7 +1065,7 @@
             
             <div id="panelBulan" style="flex: 1; min-width: 100px;">
                 <label for="selectBulan" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Pilih Bulan:</label>
-                <select id="selectBulan" class="form-select form-select-sm" onchange="renderTabel(); populateAdditionalTable()">
+                <select id="selectBulan" class="form-select form-select-sm" onchange="updateNomorSuratPeriode(); renderTabel(); populateAdditionalTable()">
                     <option value="0">Januari</option>
                     <option value="1">Februari</option>
                     <option value="2">Maret</option>
@@ -1064,15 +1082,18 @@
             </div>
             <div id="panelTahun" style="flex: 1; min-width: 80px;">
                 <label for="inputTahun" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Tahun:</label>
-                <input type="number" id="inputTahun" class="form-control form-control-sm" value="2026" min="2000" max="2100" onchange="renderTabel(); populateAdditionalTable()">
+                <input type="number" id="inputTahun" class="form-control form-control-sm" value="2026" min="2000" max="2100" onchange="updateNomorSuratPeriode(); renderTabel(); populateAdditionalTable()">
             </div>
             <div id="panelTanggalInvoice" style="flex: 1; min-width: 125px;">
                 <label for="inputTanggalInvoice" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Tanggal Invoice:</label>
                 <input type="date" id="inputTanggalInvoice" class="form-control form-control-sm" onchange="updateSuratTagihan(); updateInvoicePage()">
             </div>
-            <div id="panelNomorSurat" style="flex: 1; min-width: 180px;">
-                <label for="inputNomorSurat" class="form-label font-weight-bold mb-1" style="font-size: 11px;">Nomor Surat:</label>
-                <input type="text" id="inputNomorSurat" class="form-control form-control-sm" value="/Penjualan/Korporat/0326" oninput="updateSuratTagihan()">
+            <div id="panelNomorSurat" style="flex: 0 1 270px; min-width: 245px;">
+                <label class="form-label font-weight-bold mb-1" style="font-size: 11px;">Nomor Surat:</label>
+                <div class="d-flex gap-1">
+                    <input type="text" id="inputNomorUrutSurat" class="form-control form-control-sm" value="" inputmode="numeric" autocomplete="off" aria-label="Nomor urut surat" oninput="updateSuratTagihan(); updateInvoicePage()">
+                    <input type="text" id="inputNomorSurat" class="form-control form-control-sm" value="/Penjualan/Korporat/0426" aria-label="Awalan dan periode nomor surat" readonly>
+                </div>
             </div>
         </div>
         
@@ -1789,11 +1810,31 @@
         return "-";
     }
 
+    function updateNomorSuratPeriode() {
+        const monthInput = document.getElementById("selectBulan");
+        const yearInput = document.getElementById("inputTahun");
+        const month = Number(monthInput.value) + 1;
+        const year = Number(yearInput.value);
+        if (!Number.isInteger(month) || month < 1 || month > 12 ||
+            !Number.isInteger(year) || year < 2000 || year > 2100) {
+            return;
+        }
+
+        const monthYear = `${String(month).padStart(2, "0")}${String(year).slice(-2)}`;
+        document.getElementById("inputNomorSurat").value = `/Penjualan/Korporat/${monthYear}`;
+    }
+
+    function getNomorSurat() {
+        const nomorUrut = document.getElementById("inputNomorUrutSurat").value.trim();
+        const bagianTetap = document.getElementById("inputNomorSurat").value;
+        return nomorUrut ? `${nomorUrut}${bagianTetap}` : bagianTetap;
+    }
+
     function updateSuratTagihan() {
         const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
         const tahunDipilih = parseInt(document.getElementById("inputTahun").value);
         const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
-        const nomorSurat = document.getElementById("inputNomorSurat").value.trim() || "/Penjualan/Korporat/0326";
+        const nomorSurat = getNomorSurat();
         const noSurat = cariNoSurat(targetIdPelanggan);
         const namaKorporat = globalNamaKorporat || "-";
         const saldoAkhir = invoiceSummary.total ?? waSummary.saldoAkhirNum ?? 0;
@@ -1827,7 +1868,7 @@
         const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
         const tahunDipilih = parseInt(document.getElementById("inputTahun").value);
         const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
-        const nomorSurat = document.getElementById("inputNomorSurat").value.trim() || "/Penjualan/Korporat/0326";
+        const nomorSurat = getNomorSurat();
         const noSurat = cariNoSurat(targetIdPelanggan);
         const npwp = ((noSurat.npwp || "").toString().trim()) || "-";
         const namaPelanggan = globalNamaKorporat || "-";
@@ -2531,6 +2572,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 window.onload = () => {
     showLoginOverlay();
+    updateNomorSuratPeriode();
     const usernameInput = document.getElementById('loginUsername');
     if (usernameInput) usernameInput.focus();
 
