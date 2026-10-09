@@ -595,10 +595,9 @@
         .invoice-reference-sign-space { height: 58px; }
         .invoice-reference-signature strong { text-decoration: underline; }
         .invoice-reference-bottom-notes { margin: 18px 0 0; padding: 12px 18px; border: 1px solid #111; text-align: left; line-height: 1.35; }
-        .invoice-reference-bottom-notes-title { margin-bottom: 12px; font-weight: 700; font-style: italic; text-decoration: underline; }
-        .invoice-reference-bottom-notes ul { margin: 0; padding: 0; list-style: none; }
-        .invoice-reference-bottom-notes li { position: relative; margin: 0 0 4px; padding-left: 18px; }
-        .invoice-reference-bottom-notes li::before { position: absolute; left: 0; content: "-"; }
+        .invoice-reference-bottom-notes-title { margin-bottom: 12px; font-weight: 700; }
+        .invoice-reference-bottom-notes ul { margin: 0; padding-left: 22px; list-style-type: circle; }
+        .invoice-reference-bottom-notes li { margin: 0 0 4px; padding-left: 4px; }
 
         @media print {
             .invoice-page {
@@ -659,8 +658,8 @@
             body.print-both .page-section.page-2,
             body.print-both .page-section.page-3 { display: block !important; }
             body.print-both .page-section.page-1 { break-after: page !important; page-break-after: always !important; }
-            body.print-both .page-section.page-2 { break-before: page !important; page-break-before: always !important; }
-            body.print-both .page-section.page-3 { break-before: page !important; page-break-before: always !important; }
+            body.print-both .page-section.page-2 { break-before: auto !important; page-break-before: auto !important; break-after: page !important; page-break-after: always !important; }
+            body.print-both .page-section.page-3 { break-before: auto !important; page-break-before: auto !important; }
         }
         /* debug-panel removed */
 
@@ -961,8 +960,25 @@
             #additionalPage { max-width: none !important; margin: 0 !important; }
             #additionalPage .table-responsive { overflow: visible !important; }
             .page-section.page-3 { page: transaction-landscape; }
-            .additional-table { width: 100% !important; min-width: 0 !important; table-layout: fixed; font-size: 7.5pt; }
+            .additional-table { width: 100% !important; min-width: 0 !important; table-layout: auto; font-size: 7.5pt; }
             .additional-table th, .additional-table td { padding: 2px 3px; font-size: 7.5pt; white-space: normal; overflow-wrap: anywhere; }
+            .additional-table th:nth-child(1), .additional-table td:nth-child(1) { width: 4%; text-align: center; }
+            .additional-table th:nth-child(2), .additional-table td:nth-child(2) { width: 10%; }
+            .additional-table th:nth-child(3), .additional-table td:nth-child(3) { width: 15%; }
+            .additional-table th:nth-child(4), .additional-table td:nth-child(4) { width: 12%; }
+            .additional-table th:nth-child(5), .additional-table td:nth-child(5) { width: 14%; }
+            .additional-table th:nth-child(6), .additional-table td:nth-child(6) { width: 6%; text-align: center; }
+            .additional-table th:nth-child(7), .additional-table td:nth-child(7) { width: 5%; text-align: center; }
+            .additional-table th:nth-child(8), .additional-table td:nth-child(8) { width: 8%; }
+            .additional-table th:nth-child(9), .additional-table td:nth-child(9) { width: 5%; }
+            .additional-table th:nth-child(10), .additional-table td:nth-child(10) { width: 6%; }
+            .additional-table th:nth-child(11), .additional-table td:nth-child(11) { width: 8%; }
+            .additional-table th:nth-child(12), .additional-table td:nth-child(12) { width: 7%; }
+            .additional-table th:nth-child(1),
+            .additional-table th:nth-child(6),
+            .additional-table th:nth-child(7),
+            .additional-table td:nth-child(6),
+            .additional-table td:nth-child(7) { white-space: nowrap; }
             .additional-table thead { display: table-header-group; }
             .additional-table tr { break-inside: avoid; page-break-inside: avoid; }
             .additional-page-title { padding: 6px 4px; font-size: 10pt; margin-bottom: 8px; background-color: #ffee55 !important; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1279,8 +1295,8 @@
         <div class="invoice-reference-bottom-notes">
             <div class="invoice-reference-bottom-notes-title">Catatan :</div>
             <ul>
-                <li>Nilai Tagihan di atas dapat berubah sesuai dengan kesepakatan dalam masalah perpajakan dengan pelanggan yang menjadi Wajib Pungut.</li>
-                <li>Tanggal 15 akan dikenakan denda sebesar 1% dan melewati tanggal 26 akan dikenakan denda sebesar 2%. Jika melewati 1 (satu) bulan transaksi, akan dikenakan 2% dari akumulasi tagihan plus denda.</li>
+                <li>Nilai tagihan di atas dapat berubah sesuai dengan kesepakatan perpajakan dengan pelanggan yang berstatus Wajib Pungut.</li>
+                <li>Pembayaran setelah tanggal 15 dikenakan denda sebesar 1% dan setelah tanggal 26 dikenakan denda sebesar 2%. Apabila keterlambatan melewati 1 (satu) bulan dari transaksi, dikenakan denda tambahan sebesar 2% dari akumulasi tagihan beserta denda.</li>
             </ul>
         </div>
     </div>
@@ -1326,7 +1342,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUcVu3deeNOH1Du3l1esFmqzHUHThn-W7PXIBnzal2SeVJp2-NtP3S0-L62CY-66qO/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhqxvCidf6yNSYLCKlFfECtoF_a5EOr-7GR_b9o6Vmhf0sgQ3ryWQWGlv53TyCb6BPJQ/exec";
     const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1uHIj7d68isk1b_O14xY2pGCChqRwRfi08JP5_ysjZ30/edit?usp=sharing";
     
     const USER_ROLES = {
@@ -2191,19 +2207,48 @@ return (
             : printTarget === "page2" ? "Rekap"
                 : printTarget === "page3" ? "Rincian"
                     : "Invoice_Rekap_dan_Rincian";
-        document.title = `${mmStr}_${tahunDipilih}_${targetIdPelanggan}_${globalNamaKorporat}_${suffix}`;
+        const namaPelanggan = globalNamaKorporat.trim() || targetIdPelanggan || "Pelanggan";
+        const namaFile = `${mmStr}_${tahunDipilih}_${targetIdPelanggan || "Tanpa_ID"}_${namaPelanggan}_${suffix}`
+            .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-")
+            .replace(/\s+/g, "_")
+            .replace(/[. ]+$/g, "");
+        const titleElement = document.querySelector("head title");
+        document.title = namaFile;
+        if (titleElement) titleElement.textContent = namaFile;
+        const page1 = document.querySelector(".page-section.page-1");
+        const page2 = document.querySelector(".page-section.page-2");
+        const originalPageOrderParent = page1 && page2 && page1.parentNode === page2.parentNode
+            ? page1.parentNode
+            : null;
         document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
         document.body.classList.remove("print-both");
         if (printTarget === "page1") document.body.classList.add("print-page-1");
         if (printTarget === "page2") document.body.classList.add("print-page-2");
         if (printTarget === "page3") document.body.classList.add("print-page-3");
-        if (printTarget === "both") document.body.classList.add("print-both");
-        window.print();
-        setTimeout(() => {
+        if (printTarget === "both") {
+            document.body.classList.add("print-both");
+            if (originalPageOrderParent) originalPageOrderParent.insertBefore(page1, page2);
+        }
+        const cleanupPrintState = () => {
             document.title = judulAsli;
+            if (printTarget === "both" && originalPageOrderParent) {
+                originalPageOrderParent.insertBefore(page2, page1);
+            }
             document.body.classList.remove("print-page-1", "print-page-2", "print-page-3", "print-page-4");
             document.body.classList.remove("print-both");
-        }, 1000);
+        };
+        window.addEventListener("afterprint", cleanupPrintState, { once: true });
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                try {
+                    window.print();
+                } catch (error) {
+                    window.removeEventListener("afterprint", cleanupPrintState);
+                    cleanupPrintState();
+                    throw error;
+                }
+            });
+        });
     }
 
     function refreshData() {
