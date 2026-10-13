@@ -1361,7 +1361,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+<script src="./invoice-logo-data.js"></script>
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6omO4pRtF7Zy7RnIIthzZr_7djutc5RvpKQWG-CzLB09qZhtS9QAjaBE_tkayNF8yjw/exec";
     const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1uHIj7d68isk1b_O14xY2pGCChqRwRfi08JP5_ysjZ30/edit?usp=sharing";
@@ -2312,7 +2313,221 @@ return (
         window.open(SPREADSHEET_URL, '_blank');
     }
 
+    async function buatFilePdfLaporan(targetIdPelanggan) {
+        if (typeof window.html2pdf !== "function") {
+            throw new Error("Pustaka pembuat PDF tidak tersedia.");
+        }
+
+        const bulanDipilih = parseInt(document.getElementById("selectBulan").value, 10) + 1;
+        const tahunDipilih = document.getElementById("inputTahun").value;
+        const namaFile = `Laporan_${targetIdPelanggan}_${String(bulanDipilih).padStart(2, "0")}_${tahunDipilih}.pdf`
+            .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-");
+        const pageDefinitions = [
+            { selector: ".page-section.page-1", widthMm: 210, heightMm: 297, orientation: "portrait" },
+            { selector: ".page-section.page-2", widthMm: 210, heightMm: 297, orientation: "portrait" },
+            { selector: ".page-section.page-3", widthMm: 297, heightMm: 210, orientation: "landscape" }
+        ];
+        const stagingContainer = document.createElement("div");
+        stagingContainer.style.position = "fixed";
+        stagingContainer.style.left = "-10000px";
+        stagingContainer.style.top = "0";
+        const stagingStyles = document.createElement("style");
+        stagingStyles.textContent = `
+            .pdf-export-page { display: block !important; box-sizing: border-box; margin: 0 !important; overflow: visible !important; background: #fff; }
+            .pdf-export-page-1 { width: 210mm; padding: 0; }
+            .pdf-export-page-1 .invoice-reference-page { width: 210mm !important; min-height: 0 !important; height: auto !important; margin: 0 !important; }
+            .pdf-export-page-2 { width: 210mm; padding: 8mm; }
+            .pdf-export-page-2 .report-container { width: 100% !important; max-width: none !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+            .pdf-export-page-2 .header-title { padding: 6px 4px; font-size: 10pt; margin-bottom: 8px; background: #ffee55 !important; color: #000 !important; }
+            .pdf-export-page-2 .table-report { width: 100% !important; margin-bottom: 8px; }
+            .pdf-export-page-2 .table-report th, .pdf-export-page-2 .table-report td { padding: 2px 4px; font-size: 8pt; }
+            .pdf-export-page-2 .info-saldo-section { display: block !important; margin-top: 6px; }
+            .pdf-export-page-2 .info-saldo-section td { font-size: 8pt; padding: 2px 0; }
+            .pdf-export-page-2 .ttd-section { margin-top: 10px; padding-top: 8px; }
+            .pdf-export-page-2 .ttd-space { height: 45px; }
+            .pdf-export-page-3 { width: 297mm; padding: 8mm; }
+            .pdf-export-page-3 .report-container { width: 100% !important; max-width: none !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+            .pdf-export-page-3 .table-responsive { overflow: visible !important; }
+            .pdf-export-page-3 .additional-table { width: 100% !important; min-width: 0 !important; table-layout: fixed; font-size: 7.5pt; }
+            .pdf-export-page-3 .additional-table th, .pdf-export-page-3 .additional-table td { padding: 3px 4px; font-size: 7.5pt; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
+            .pdf-export-page-3 .additional-table th:nth-child(1), .pdf-export-page-3 .additional-table td:nth-child(1) { width: 4%; text-align: center; }
+            .pdf-export-page-3 .additional-table th:nth-child(2), .pdf-export-page-3 .additional-table td:nth-child(2) { width: 10%; }
+            .pdf-export-page-3 .additional-table th:nth-child(3), .pdf-export-page-3 .additional-table td:nth-child(3) { width: 15%; }
+            .pdf-export-page-3 .additional-table th:nth-child(4), .pdf-export-page-3 .additional-table td:nth-child(4) { width: 12%; }
+            .pdf-export-page-3 .additional-table th:nth-child(5), .pdf-export-page-3 .additional-table td:nth-child(5) { width: 14%; }
+            .pdf-export-page-3 .additional-table th:nth-child(6), .pdf-export-page-3 .additional-table td:nth-child(6) { width: 6%; text-align: center; }
+            .pdf-export-page-3 .additional-table th:nth-child(7), .pdf-export-page-3 .additional-table td:nth-child(7) { width: 5%; text-align: center; }
+            .pdf-export-page-3 .additional-table th:nth-child(8), .pdf-export-page-3 .additional-table td:nth-child(8) { width: 8%; }
+            .pdf-export-page-3 .additional-table th:nth-child(9), .pdf-export-page-3 .additional-table td:nth-child(9) { width: 5%; }
+            .pdf-export-page-3 .additional-table th:nth-child(10), .pdf-export-page-3 .additional-table td:nth-child(10) { width: 6%; }
+            .pdf-export-page-3 .additional-table th:nth-child(11), .pdf-export-page-3 .additional-table td:nth-child(11) { width: 8%; }
+            .pdf-export-page-3 .additional-table th:nth-child(12), .pdf-export-page-3 .additional-table td:nth-child(12) { width: 7%; }
+        `;
+        stagingContainer.appendChild(stagingStyles);
+
+        const clones = pageDefinitions.map((definition, index) => {
+            const source = document.querySelector(definition.selector);
+            if (!source) {
+                throw new Error(`Bagian laporan ${index + 1} tidak ditemukan.`);
+            }
+
+            const clone = source.cloneNode(true);
+            clone.classList.add("pdf-export-page", `pdf-export-page-${index + 1}`);
+            clone.style.display = "block";
+            stagingContainer.appendChild(clone);
+            return clone;
+        });
+
+        document.body.appendChild(stagingContainer);
+        try {
+            const invoiceClone = clones[0].querySelector(".invoice-reference-page");
+            for (const image of invoiceClone.querySelectorAll("img")) {
+                try {
+                    if (image.classList.contains("invoice-reference-logo")) {
+                        if (typeof window.INVOICE_PDF_LOGO_DATA !== "string" ||
+                            !window.INVOICE_PDF_LOGO_DATA.startsWith("data:image/png;base64,")) {
+                            throw new Error("Data logo invoice tidak tersedia.");
+                        }
+                        image.src = window.INVOICE_PDF_LOGO_DATA;
+                        await image.decode();
+                        if (!image.naturalWidth) {
+                            throw new Error("Logo invoice tidak dapat dimuat.");
+                        }
+                        continue;
+                    }
+
+                    if (!image.complete) {
+                        await new Promise((resolve, reject) => {
+                            image.addEventListener("load", resolve, { once: true });
+                            image.addEventListener("error", reject, { once: true });
+                        });
+                    }
+                    if (!image.naturalWidth) {
+                        throw new Error(`Gambar invoice tidak dapat dimuat: ${image.alt || image.src}`);
+                    }
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = image.naturalWidth;
+                    canvas.height = image.naturalHeight;
+                    canvas.getContext("2d").drawImage(image, 0, 0);
+                    image.src = canvas.toDataURL("image/png");
+                } catch (error) {
+                    console.error("Gagal menyiapkan gambar invoice untuk PDF.", error);
+                    throw error;
+                }
+            }
+
+            const pdfSettings = {
+                margin: 0,
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                pagebreak: { mode: ["css", "legacy"] }
+            };
+            const pdf = await window.html2pdf()
+                .set({
+                    ...pdfSettings,
+                    html2canvas: { ...pdfSettings.html2canvas, height: 1122 }
+                })
+                .from(clones[0].querySelector(".invoice-reference-page"))
+                .toPdf()
+                .get("pdf");
+
+            const invoicePageWidth = pdf.internal.pageSize.getWidth();
+            const invoicePageHeight = pdf.internal.pageSize.getHeight();
+            pdf.setDrawColor(17, 17, 17);
+            pdf.setLineWidth(0.25);
+            pdf.rect(2, 2, invoicePageWidth - 4, invoicePageHeight - 4);
+
+            const addCanvasPage = (canvas, orientation) => {
+                pdf.addPage("a4", orientation);
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const scale = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
+                const imageWidth = canvas.width * scale;
+                const imageHeight = canvas.height * scale;
+                pdf.addImage(
+                    canvas.toDataURL("image/jpeg", 0.98),
+                    "JPEG",
+                    (pageWidth - imageWidth) / 2,
+                    0,
+                    imageWidth,
+                    imageHeight
+                );
+            };
+
+            const rekapCanvas = await window.html2pdf()
+                .set({
+                    ...pdfSettings,
+                    jsPDF: { ...pdfSettings.jsPDF, orientation: pageDefinitions[1].orientation }
+                })
+                .from(clones[1])
+                .toCanvas()
+                .get("canvas");
+            addCanvasPage(rekapCanvas, pageDefinitions[1].orientation);
+
+            const detailPage = clones[2];
+            const detailTable = detailPage.querySelector(".additional-table");
+            const detailBody = detailTable && detailTable.tBodies[0];
+            if (!detailTable || !detailBody) {
+                throw new Error("Tabel rincian transaksi tidak ditemukan.");
+            }
+
+            const detailRows = Array.from(detailBody.rows, row => row.cloneNode(true));
+            const detailRowHeights = Array.from(detailBody.rows, row => row.getBoundingClientRect().height);
+            detailBody.replaceChildren();
+            const maxDetailContentHeight = (pageDefinitions[2].heightMm - 16) * 96 / 25.4;
+            const detailBaseHeight = detailPage.querySelector(".report-container").getBoundingClientRect().height;
+            const availableDetailHeight = Math.max(1, maxDetailContentHeight - detailBaseHeight);
+            const detailChunks = [];
+            let detailChunk = [];
+            let detailChunkHeight = 0;
+
+            detailRows.forEach((row, index) => {
+                const rowHeight = detailRowHeights[index];
+                if (detailChunk.length && detailChunkHeight + rowHeight > availableDetailHeight) {
+                    detailChunks.push(detailChunk);
+                    detailChunk = [];
+                    detailChunkHeight = 0;
+                }
+                detailChunk.push(row);
+                detailChunkHeight += rowHeight;
+            });
+            if (detailChunk.length || detailChunks.length === 0) {
+                detailChunks.push(detailChunk);
+            }
+
+            for (const chunk of detailChunks) {
+                detailBody.replaceChildren();
+                for (const row of chunk) {
+                    detailBody.appendChild(row);
+                }
+                const detailCanvas = await window.html2pdf()
+                    .set({
+                        ...pdfSettings,
+                        jsPDF: { ...pdfSettings.jsPDF, orientation: pageDefinitions[2].orientation }
+                    })
+                    .from(detailPage)
+                    .toCanvas()
+                    .get("canvas");
+                addCanvasPage(detailCanvas, pageDefinitions[2].orientation);
+            }
+
+            const pdfBlob = pdf.output("blob");
+            return new File([pdfBlob], namaFile, { type: "application/pdf" });
+        } finally {
+            stagingContainer.remove();
+        }
+    }
+
     function kirimKeWhatsApp() {
+        kirimInvoiceKeWhatsApp().catch(error => {
+            console.error("Gagal menyiapkan laporan untuk WhatsApp.", error);
+            showToast("Gagal menyiapkan PDF laporan. Silakan coba lagi.", "danger");
+        });
+    }
+
+    async function kirimInvoiceKeWhatsApp() {
         const bulanDipilih = parseInt(document.getElementById("selectBulan").value);
         const tahunDipilih = document.getElementById("inputTahun").value;
         const targetIdPelanggan = document.getElementById("selectIdPelanggan").value.trim().toUpperCase();
@@ -2382,40 +2597,57 @@ return (
                   `c. Apabila tidak bersedia secara tunai maka Kami berhak menolak dan menghentikan layanan pengiriman ini.\n\n` +
                   `Terima kasih.`;
 
-        // prefer PIC1, fallback PIC2, otherwise open generic chat
+        const nomorTujuan = pic1 || pic2;
+        const waUrl = `https://api.whatsapp.com/send?${nomorTujuan ? `phone=${nomorTujuan}&` : ""}text=${encodeURIComponent(teksPesan)}`;
+        const fileUntukCek = new File([""], "invoice.pdf", { type: "application/pdf" });
+        const dukungShareFile = typeof navigator.share === "function" &&
+            typeof navigator.canShare === "function" &&
+            navigator.canShare({ files: [fileUntukCek] });
+        const jendelaWhatsApp = dukungShareFile ? null : window.open(waUrl, "_blank");
+
+        let filePdf;
         try {
-            const waUrlPic1 = pic1 ? `https://api.whatsapp.com/send?phone=${pic1}&text=${encodeURIComponent(teksPesan)}` : null;
-            const waUrlPic2 = pic2 ? `https://api.whatsapp.com/send?phone=${pic2}&text=${encodeURIComponent(teksPesan)}` : null;
-            console.log('kirimKeWhatsApp -> waUrlPic1, waUrlPic2:', waUrlPic1, waUrlPic2);
+            filePdf = await buatFilePdfLaporan(targetIdPelanggan);
+        } catch (error) {
+            console.error("Gagal membuat PDF laporan.", error);
+            if (jendelaWhatsApp) {
+                showToast("PDF gagal dibuat; WhatsApp dibuka tanpa lampiran.", "warning");
+            } else {
+                const detailError = error instanceof Error ? error.message : String(error);
+                alert(`PDF gagal dibuat (${detailError}). WhatsApp akan dibuka tanpa lampiran.`);
+                window.location.assign(waUrl);
+            }
+            return;
+        }
 
-            if (waUrlPic1) {
-                const win = window.open(waUrlPic1, '_blank');
-                if (!win) {
-                    showToast('Popup diblokir. Klik tombol WA untuk membuka link.', 'warning');
-                    console.log('Popup blocked for waUrlPic1:', waUrlPic1);
-                }
+        if (dukungShareFile && navigator.canShare({ files: [filePdf] })) {
+            try {
+                await navigator.share({
+                    files: [filePdf],
+                    title: filePdf.name,
+                    text: teksPesan
+                });
                 return;
+            } catch (error) {
+                if (error.name === "AbortError") return;
+                console.error("Berbagi PDF melalui menu perangkat gagal.", error);
             }
-            if (waUrlPic2) {
-                const win2 = window.open(waUrlPic2, '_blank');
-                if (!win2) {
-                    showToast('Popup diblokir. Klik tombol WA untuk membuka link.', 'warning');
-                    console.log('Popup blocked for waUrlPic2:', waUrlPic2);
-                }
-                return;
-            }
+        }
 
-            // fallback: open generic chat with message only
-            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(teksPesan)}`;
-            const win3 = window.open(waUrl, '_blank');
-            if (!win3) {
-                showToast('Popup diblokir. Klik tombol WA untuk membuka link.', 'warning');
-                console.log('Popup blocked for fallback waUrl:', waUrl);
-            }
-        } catch (e) {
-            console.error('kirimKeWhatsApp error opening WhatsApp URL', e);
-            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(teksPesan)}`;
-            window.open(waUrl, '_blank');
+        const downloadUrl = URL.createObjectURL(filePdf);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = downloadUrl;
+        downloadLink.download = filePdf.name;
+        downloadLink.click();
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+
+        if (dukungShareFile) {
+            showToast("PDF diunduh. Berbagi file gagal; lampirkan PDF secara manual di WhatsApp.", "warning");
+        } else if (jendelaWhatsApp) {
+            showToast("PDF diunduh. Lampirkan PDF tersebut di WhatsApp.", "info");
+        } else {
+            showToast("PDF diunduh. WhatsApp dibuka di tab ini; lampirkan PDF tersebut.", "info");
+            window.setTimeout(() => window.location.assign(waUrl), 500);
         }
     }
 
