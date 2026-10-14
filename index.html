@@ -297,6 +297,78 @@
             display: block;
         }
 
+        .pph23-page {
+            width: min(100%, 1400px);
+            margin: 0 auto 20px;
+            padding: 0 5px;
+            overflow-x: auto;
+            background: #fff;
+        }
+        .pph23-header {
+            margin-bottom: 23px;
+            padding: 5px 3px 25px;
+            background: #fff500;
+            color: #000;
+        }
+        .pph23-title {
+            margin-bottom: 29px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .pph23-meta {
+            display: grid;
+            grid-template-columns: 176px 1fr;
+            gap: 4px 8px;
+            font-size: 15px;
+        }
+        .pph23-table {
+            width: 100%;
+            min-width: 1050px;
+            table-layout: fixed;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: 14px;
+        }
+        .pph23-table th, .pph23-table td {
+            overflow: hidden;
+            padding: 3px 5px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .pph23-table th { height: 24px; font-weight: bold; text-align: center; }
+        .pph23-table th:nth-child(1), .pph23-table td:nth-child(1) { width: 2.5%; }
+        .pph23-table th:nth-child(2), .pph23-table td:nth-child(2) { width: 11.3%; }
+        .pph23-table th:nth-child(3), .pph23-table td:nth-child(3) { width: 8.5%; }
+        .pph23-table th:nth-child(4), .pph23-table td:nth-child(4) { width: 7%; }
+        .pph23-table th:nth-child(5), .pph23-table td:nth-child(5) { width: 7%; }
+        .pph23-table th:nth-child(6), .pph23-table td:nth-child(6) { width: 17%; }
+        .pph23-table th:nth-child(7), .pph23-table td:nth-child(7) { width: 16%; }
+        .pph23-table th:nth-child(8), .pph23-table td:nth-child(8) { width: 6.8%; }
+        .pph23-table th:nth-child(9), .pph23-table td:nth-child(9) { width: 9%; }
+        .pph23-table th:nth-child(10), .pph23-table td:nth-child(10) { width: 8%; }
+        .pph23-table th:nth-child(11), .pph23-table td:nth-child(11) { width: 7%; }
+        .pph23-table td:nth-child(n+3):nth-child(-n+8) { text-align: left; }
+        .pph23-table td:nth-child(n+9) { text-align: right; }
+        .pph23-table .pph23-total-row td { text-align: right !important; }
+        .pph23-table input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            height: auto;
+            min-height: 0;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            line-height: inherit;
+            box-shadow: none;
+        }
+        .pph23-table input:focus { outline: 1px solid #86b7fe; background: #fff; }
+
         .invoice-page {
             max-width: 980px;
             margin: 18px auto 20px auto;
@@ -671,13 +743,17 @@
             body.print-page-3 .page-section.page-1,
             body.print-page-3 .page-section.page-2 { display: none !important; }
             body.print-page-3 .page-section.page-3 { display: block !important; page-break-before: auto; }
+            body.print-page-4 .page-section:not(.page-4) { display: none !important; }
+            body.print-page-4 .page-section.page-4 { display: block !important; page-break-before: auto; }
             body.print-both .page-section { display: none !important; }
             body.print-both .page-section.page-1,
             body.print-both .page-section.page-2,
-            body.print-both .page-section.page-3 { display: block !important; }
+            body.print-both .page-section.page-3,
+            body.print-both .page-section.page-4 { display: block !important; }
             body.print-both .page-section.page-1 { break-after: page !important; page-break-after: always !important; }
             body.print-both .page-section.page-2 { break-before: auto !important; page-break-before: auto !important; break-after: page !important; page-break-after: always !important; }
-            body.print-both .page-section.page-3 { break-before: auto !important; page-break-before: auto !important; }
+            body.print-both .page-section.page-3 { break-before: auto !important; page-break-before: auto !important; break-after: page !important; page-break-after: always !important; }
+            body.print-both .page-section.page-4 { break-before: auto !important; page-break-before: auto !important; }
         }
         /* debug-panel removed */
 
@@ -928,6 +1004,13 @@
             .control-panel, .no-print, .toast-container, .page-nav, .page-toggle, .page-nav-wrapper { display: none !important; }
             .page-section { display: block !important; }
             .page-section:not(.page-1) { display: none !important; }
+            body.print-page-2 .page-section.page-2,
+            body.print-page-3 .page-section.page-3,
+            body.print-page-4 .page-section.page-4,
+            body.print-both .page-section.page-1,
+            body.print-both .page-section.page-2,
+            body.print-both .page-section.page-3,
+            body.print-both .page-section.page-4 { display: block !important; }
             .page-1 { display: block !important; break-inside: avoid; page-break-inside: avoid; }
 
             .report-container { box-shadow: none; margin: 0; padding: 0; width: 100% !important; max-width: 100% !important; min-width: 100% !important; }
@@ -1000,6 +1083,13 @@
             .additional-table thead { display: table-header-group; }
             .additional-table tr { break-inside: avoid; page-break-inside: avoid; }
             .additional-page-title { padding: 6px 4px; font-size: 10pt; margin-bottom: 8px; background-color: #ffee55 !important; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .pph23-page { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+            .pph23-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .pph23-title { font-size: 12pt; }
+            .pph23-meta { font-size: 9pt; }
+            .pph23-table { width: 100% !important; min-width: 0; }
+            .pph23-table th, .pph23-table td { padding: 2px 3px; font-size: 7pt; white-space: normal; overflow-wrap: anywhere; }
+            .pph23-table input { min-width: 0; width: 100%; padding: 0; border: 0; }
         }
     </style>
 </head>
@@ -1116,6 +1206,7 @@
                     <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page1'); return false;">Invoice</a></li>
                     <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page2'); return false;">Rekap transaksi</a></li>
                     <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page3'); return false;">Rincian Transaksi</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="cetakKePdf('page4'); return false;">Perhitungan PPH 23</a></li>
                 </ul>
             </div>
             <button id="btnExportExcel" class="btn-custom-icon btn-sheets-icon" onclick="exportAdditionalToCSV()" title="Export Excel">
@@ -1149,6 +1240,7 @@
         <button type="button" id="btnPage1" class="page-toggle active" onclick="setActivePage(1)">Invoice</button>
         <button type="button" id="btnPage2" class="page-toggle" onclick="setActivePage(2)">Rekap transaksi</button>
         <button type="button" id="btnPage3" class="page-toggle" onclick="setActivePage(3)">Rincian Transaksi</button>
+        <button type="button" id="btnPage4" class="page-toggle" onclick="setActivePage(4)">Perhitungan PPH 23</button>
     </div>
 </div>
 
@@ -1360,6 +1452,37 @@
     </div>
 </div>
 
+<div class="page-section page-4">
+    <div class="pph23-page">
+        <div class="pph23-header">
+            <div class="pph23-title">RINCIAN PERHITUNGAN PAJAK PENGIRIMAN DOKUMEN DAN PAKET</div>
+            <div class="pph23-meta">
+                <div>Nama Pelanggan</div><div>: <span id="pph23NamaPelanggan">-</span></div>
+                <div>ID Pelanggan</div><div>: <span id="pph23IdPelanggan">-</span></div>
+                <div>Periode Transaksi</div><div>: <span id="pph23Periode">-</span></div>
+            </div>
+        </div>
+        <table class="pph23-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal Transaksi</th>
+                    <th>No.Doc (SAP)</th>
+                    <th>NPWP</th>
+                    <th>ID Pelanggan</th>
+                    <th>Nama Mitra</th>
+                    <th>Alamat</th>
+                    <th>Keterangan</th>
+                    <th>PENDAPATAN</th>
+                    <th>DPP</th>
+                    <th>PPH 23</th>
+                </tr>
+            </thead>
+            <tbody id="pph23TableBody"></tbody>
+        </table>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
 <script src="./invoice-logo-data.js"></script>
@@ -1384,6 +1507,22 @@
     
     const namaBulanIndo = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
     const namaBulanEng = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const pelangganPph23Dikecualikan = new Set([
+        "BANKBNI08863A",
+        "LNKPPN08863A",
+        "LNPNENDE08863A",
+        "LNKARANTIN08863A",
+        "LNMAPAG05863A",
+        "LNMAPAG05863B",
+        "LNMAPN05863A",
+        "LNPERURI03413B",
+        "ASRRAHARJA05863A",
+        "INDSUCOFIND07600B",
+        "DAGPRACI05863A",
+        "BANKBRI08863A",
+        "BANKMANDIRI08863A",
+        "LOGKOPANSIK05863A"
+    ]);
 
     function parseTanggal(value) {
         if (!value) return null;
@@ -1625,6 +1764,92 @@
         if (rows.length === 0) {
             tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">Tidak ada data untuk ID terpilih.</td></tr>';
         }
+        populatePph23Table();
+    }
+
+    function populatePph23Table() {
+        const tbody = document.getElementById('pph23TableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const targetId = document.getElementById('selectIdPelanggan').value.trim().toUpperCase();
+        const bulanDipilih = parseInt(document.getElementById('selectBulan').value, 10);
+        const tahunDipilih = parseInt(document.getElementById('inputTahun').value, 10);
+        const data = Array.isArray(cloudData.laporanUtama) ? cloudData.laporanUtama : [];
+        const noSuratRows = Array.isArray(cloudData.noSurat) ? cloudData.noSurat : [];
+        const pph23Dikecualikan = pelangganPph23Dikecualikan.has(targetId);
+        const pph23Header = document.querySelector('.pph23-table thead th:last-child');
+        if (pph23Header) pph23Header.hidden = pph23Dikecualikan;
+        const noSuratItem = noSuratRows.find(row =>
+            (row.idPelanggan || '').toString().trim().toUpperCase() === targetId
+        ) || {};
+        const namaBulan = Number.isInteger(bulanDipilih) ? namaBulanIndo[bulanDipilih] : '-';
+
+        document.getElementById('pph23NamaPelanggan').innerText = globalNamaKorporat || '-';
+        document.getElementById('pph23IdPelanggan').innerText = targetId || '-';
+        document.getElementById('pph23Periode').innerText =
+            `${namaBulan} ${Number.isFinite(tahunDipilih) ? tahunDipilih : '-'}`;
+
+        const rows = data.filter(row => {
+            if (!row.idPelanggan || row.idPelanggan.toString().trim().toUpperCase() !== targetId) return false;
+            const tanggal = parseTanggal(row.tglTrx);
+            return tanggal &&
+                tanggal.getMonth() === bulanDipilih &&
+                tanggal.getFullYear() === tahunDipilih;
+        }).sort((a, b) => parseTanggal(a.tglTrx) - parseTanggal(b.tglTrx));
+
+        let totalPendapatan = 0;
+        let totalDpp = 0;
+        let totalPph23 = 0;
+
+        rows.forEach((row, index) => {
+            const tanggalTrx = parseTanggal(row.tglTrx);
+            const pendapatan = parseNumberForCalc(row.ongkir);
+            const dpp = Math.round(pendapatan * (100 / 111));
+            const pph23 = pph23Dikecualikan ? 0 : Math.round(pendapatan * 0.02);
+            totalPendapatan += pendapatan;
+            totalDpp += dpp;
+            totalPph23 += pph23;
+            const npwp = (noSuratItem.npwp || row.npwp || '').toString().trim();
+            const alamat = (noSuratItem.alamat || row.alamat || '').toString().trim();
+            const nama = (row.namaKorporat || '').toString().replace(/_/g, ' ');
+            const tanggalFormatted = tanggalTrx
+                ? `${String(tanggalTrx.getDate()).padStart(2, '0')} ${new Intl.DateTimeFormat('en', { month: 'short' }).format(tanggalTrx)} ${tanggalTrx.getFullYear()}`
+                : '';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${tanggalFormatted}</td>
+                <td><input aria-label="No.Doc SAP" data-field="nodoc" value=""></td>
+                <td><input aria-label="NPWP" data-field="npwp" value="${escapeHtml(npwp)}"></td>
+                <td>${escapeHtml(targetId)}</td>
+                <td>${escapeHtml(nama)}</td>
+                <td><input aria-label="Alamat" data-field="alamat" value="${escapeHtml(alamat)}"></td>
+                <td><input aria-label="Keterangan" data-field="keterangan" value=""></td>
+                <td>${formatNumber(pendapatan)}</td>
+                <td>${formatNumber(dpp)}</td>
+                <td${pph23Dikecualikan ? ' hidden' : ''}>${formatNumber(pph23)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if (!rows.length) {
+            tbody.innerHTML = `<tr><td colspan="${pph23Dikecualikan ? 10 : 11}" class="text-center text-muted">${
+                targetId ? 'Tidak ada data untuk ID dan periode terpilih.' : 'Silakan pilih ID Pelanggan terlebih dahulu.'
+            }</td></tr>`;
+            return;
+        }
+
+        const totalRow = document.createElement('tr');
+        totalRow.className = 'fw-bold pph23-total-row';
+        totalRow.innerHTML = `
+            <td colspan="8" class="text-end">TOTAL</td>
+            <td>${formatNumber(totalPendapatan)}</td>
+            <td>${formatNumber(totalDpp)}</td>
+            <td${pph23Dikecualikan ? ' hidden' : ''}>${formatNumber(totalPph23)}</td>
+        `;
+        tbody.appendChild(totalRow);
     }
 
     function exportAdditionalToCSV() {
@@ -1901,23 +2126,8 @@
         const diskon = discount;
         const ppnSetelahDiskon = Math.max(0, pajak - diskon);
         const totalNetting = Math.max(0, totalBruto - diskon + ppnSetelahDiskon + htnb + ppnHtnb);
-        const pelangganPph23Dikecualikan = [
-            "BANKBNI08863A",
-            "LNKPPN08863A",
-            "LNPNENDE08863A",
-            "LNKARANTIN08863A",
-            "LNMAPAG05863A",
-            "LNMAPAG05863B",
-            "LNMAPN05863A",
-            "LNPERURI03413B",
-            "ASRRAHARJA05863A",
-            "INDSUCOFIND07600B",
-            "DAGPRACI05863A",
-            "BANKBRI08863A",
-            "BANKMANDIRI08863A",
-            "LOGKOPANSIK05863A"
-        ].includes(targetIdPelanggan);
-        const nilaiPph23 = pelangganPph23Dikecualikan ? 0 : Math.round(ongkir * 0.02);
+        const pph23Dikecualikan = pelangganPph23Dikecualikan.has(targetIdPelanggan);
+        const nilaiPph23 = pph23Dikecualikan ? 0 : Math.round(ongkir * 0.02);
         const biayaPacking = waSummary.biayaPackingNum || 0;
         const nomorCetakan = parseInt(document.getElementById("invoiceCopyNumber").value, 10) || 1;
         const dasarDenda = Math.max(0, totalBruto);
@@ -2255,7 +2465,8 @@ return (
         const suffix = printTarget === "page1" ? "Invoice"
             : printTarget === "page2" ? "Rekap"
                 : printTarget === "page3" ? "Rincian"
-                    : "Invoice_Rekap_dan_Rincian";
+                    : printTarget === "page4" ? "Perhitungan_PPH23"
+                        : "Invoice_Rekap_Rincian_dan_PPH23";
         const namaPelanggan = globalNamaKorporat.trim() || targetIdPelanggan || "Pelanggan";
         const namaFile = `${mmStr}_${tahunDipilih}_${targetIdPelanggan || "Tanpa_ID"}_${namaPelanggan}_${suffix}`
             .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-")
@@ -2274,6 +2485,7 @@ return (
         if (printTarget === "page1") document.body.classList.add("print-page-1");
         if (printTarget === "page2") document.body.classList.add("print-page-2");
         if (printTarget === "page3") document.body.classList.add("print-page-3");
+        if (printTarget === "page4") document.body.classList.add("print-page-4");
         if (printTarget === "both") {
             document.body.classList.add("print-both");
             if (originalPageOrderParent) originalPageOrderParent.insertBefore(page1, page2);
@@ -2855,6 +3067,8 @@ function setActivePage(pageNumber){
     if(b2) b2.classList.toggle('active', pageNumber === 2);
     const b3 = document.getElementById('btnPage3');
     if(b3) b3.classList.toggle('active', pageNumber === 3);
+    const b4 = document.getElementById('btnPage4');
+    if(b4) b4.classList.toggle('active', pageNumber === 4);
 }
 </script>
 </body>
